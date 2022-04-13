@@ -59,7 +59,7 @@
 
 <script>
 import axios from 'axios'
-import gfc from '@syscut/mymodule'
+import gfc from 'syscut'
 import HelloWorld from './HelloWorld.vue'
 
 export default {

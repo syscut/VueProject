@@ -84,15 +84,14 @@
     ></v-divider>
     <h5>共{{originalItemsLength}}筆</h5>
     <v-spacer></v-spacer>
-    <v-btn
-    color="black"
-    @click="testClick"
-    dark
-    >測試</v-btn>
+    <!-- 測試按鈕 ---------------------------------------->
+
+    <v-btn color="black" @click="testClick" dark>測試</v-btn>
+    <!-- 測試按鈕 ---------------------------------------->
     <v-form v-model="valid" lazy-validation> 
       <v-text-field
       type="number"
-      label="修改分數"       
+      label="修改分數"
       :rules="checkNum"
       class="mx-4 updaterecfiled"
       v-if="showUpdateRec"
@@ -256,6 +255,7 @@
           {{ text }}
         </template>
         </v-file-input>
+        <p> 上傳：{{ up_ok }}</p>
         </v-col>
       <v-col
       cols="8"
@@ -454,7 +454,7 @@
 <script>
 import Vue from 'vue'
 import axios from 'axios'
-import en from '@syscut/mymodule'
+import en from 'syscut'
 //const en = require('@syscut/mymodule')
   export default {
     props:{
@@ -548,7 +548,9 @@ import en from '@syscut/mymodule'
         row_id:'',
         ans_item:'',
         is_item:''
-      }
+      },
+      up_ok:'',
+
       }
 
       },
@@ -626,6 +628,8 @@ import en from '@syscut/mymodule'
         return param+'&t='+this.editMode;
       },
       testClick(){
+        let t = '{ "�����(1).png": "http://gfcweb/cgi-bin/prgm360w_dl_handle.pl?id=6079&name=�����(1).png ", "����.png": "http://gfcweb/cgi-bin/prgm360w_dl_handle.pl?id=6080&name=����.png", "�s��r���.txt": "http://gfcweb/cgi-bin/prgm360w_dl_handle.pl?id=6081&name=�s��r���.txt" }';
+console.log(t.replace(/[^\.\w/":{}()\s,]/g,'x'))
         //Promise.all([url1,url2]).then().catch()
         // let gfcApi = axios.create({
         //   baseURL:'http://gfcweb/xml/xml/kim_test_api.html?s110='+en.encodeBig5(this.selectedS110)
@@ -918,72 +922,75 @@ import en from '@syscut/mymodule'
           this.valid = false;
           let parseS110 = this.selectedS110 == '測試'? 'test': this.selectedS110 == '管理者'? 'adm' : this.selectedS110;
           let fileData = [];
-          for(let n = 0;n<this.selectedFile.length;n++){
-            let formData = new FormData();
-            formData.append('file',this.selectedFile[n]);
-            formData.append('back_url','/xml/');
-            formData.append('MIval','/xml/kim_test_api.html');
-            formData.append('rel_id1','N');
-            formData.append('rel_id2',parseS110);
-            formData.append('rel_id3',this.editedItem.qt_type);
-            formData.append('rel_id4',this.editedItem.qt_no);
-            formData.append('rel_id5',n+1);
-            formData.append('rel_id6',500+'-'+300);
-            fileData.push(axios.post('http://gfcweb/cgi-bin/prgm360w_up_handle.pl',formData));
-          }
-          await Promise.all(fileData).then(d=>{
-            console.log(d.msg)
-            this.snack = true
-          this.snackColor = 'success'
-          this.snackText = '圖片新增成功'
           
-          }).catch(e=>{
-            this.snack = true
-          this.snackColor = 'error'
-          this.snackText = '圖片新增失敗'
+          // for(let n = 0;n<this.selectedFile.length;n++){
+          //   let formData = new FormData();
+          //   formData.append('file',this.selectedFile[n]);
+          //   formData.append('back_url','/xml/');
+          //   formData.append('MIval','/xml/kim_test_api.html');
+          //   formData.append('rel_id1','N');
+          //   formData.append('rel_id2',parseS110);
+          //   formData.append('rel_id3',this.editedItem.qt_type);
+          //   formData.append('rel_id4',this.editedItem.qt_no);
+          //   formData.append('rel_id5',n+1);
+          //   formData.append('rel_id6',500+'-'+300);
+          //   fileData.push(axios.post('http://gfcweb/cgi-bin/prgm360w_up_handle.pl',formData));
+          // }
+          // await Promise.all(fileData).then(d=>{
+          //   console.log(d.msg)
+          //   this.snack = true
+          // this.snackColor = 'success'
+          // this.snackText = '圖片新增成功'
           
-          })
+          // }).catch(e=>{
+          //   this.snack = true
+          // this.snackColor = 'error'
+          // this.snackText = '圖片新增失敗'
+          
+          // })
           this.fileLoading = false;
           this.valid = true;
-          this.close()
+          //this.close()
         }
         //新增項次圖片-----------------------------------------------------------------
         if(this.showFileUpload == true && this.editMode == 'new_item'){
-
           this.fileLoading = true;
           this.valid = false;
-          
           let parseS110 = this.selectedS110 == '測試'? 'test': this.selectedS110 == '管理者'? 'adm' : this.selectedS110;
           let fileData = [];
-          for(let n = 0;n<this.selectedFile.length;n++){
-            let formData = new FormData();
-            formData.append('file',this.selectedFile[n]);
-            formData.append('back_url','/xml/');
-            formData.append('MIval','/xml/kim_test_api.html');
-            formData.append('rel_id1','I');
-            formData.append('rel_id2',parseS110);
-            formData.append('rel_id3',this.editedItem.qt_type);
-            formData.append('rel_id4',this.editedItem.qt_no);
-            formData.append('rel_id5','');
-            formData.append('rel_id6',500+'-'+300);
-            fileData.push(axios.post('http://gfcweb/cgi-bin/prgm360w_up_handle.pl',formData));
-          }
-          await Promise.all(fileData).then(d=>{
-            console.log(d.url)
-            this.$emit('reload');
-            this.snack = true
-          this.snackColor = 'success'
-          this.snackText = '圖片新增成功'
           
-          }).catch(e=>{
-            this.snack = true
-          this.snackColor = 'error'
-          this.snackText = '圖片新增失敗'
+          let test = await en.uploadFiiles(this.selectedFile,'docd400w','03/25/2022');
+          console.log(test);
+          this.up_ok = test;
+          // for(let n = 0;n<this.selectedFile.length;n++){
+          //   let formData = new FormData();
+          //   formData.append('file',this.selectedFile[n]);
+          //   formData.append('back_url','/xml/');
+          //   formData.append('MIval','/xml/kim_test_api.html');
+          //   formData.append('rel_id1','I');
+          //   formData.append('rel_id2',parseS110);
+          //   formData.append('rel_id3',this.editedItem.qt_type);
+          //   formData.append('rel_id4',this.editedItem.qt_no);
+          //   formData.append('rel_id5','');
+          //   formData.append('rel_id6',500+'-'+300);
+          //   fileData.push(axios.post('http://gfcweb/cgi-bin/prgm360w_up_handle.pl',formData));
+          // }
+          // await Promise.all(fileData).then(d=>{
+          //   console.log(d.url)
+          //   this.$emit('reload');
+          //   this.snack = true
+          // this.snackColor = 'success'
+          // this.snackText = '圖片新增成功'
           
-          })
+          // }).catch(e=>{
+          //   this.snack = true
+          // this.snackColor = 'error'
+          // this.snackText = '圖片新增失敗'
+          
+          // })
           this.fileLoading = false;
           this.valid = true;
-          this.close()
+          //this.close()
         }
 
       },
@@ -991,6 +998,7 @@ import en from '@syscut/mymodule'
         let qt_type_s = this.selected.map(obj=>obj.qt_type).join(',');
         let qt_no_s =  this.selected.map(obj=>obj.qt_no).join(',');
         let len = this.selected.length -1;
+        
         await axios.get(this.api+'s110='+en.encodeBig5(this.selectedS110),{
           params:{
             qt_type_s:qt_type_s,
