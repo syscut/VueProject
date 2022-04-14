@@ -1,53 +1,28 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
+    <v-app-bar color="#1976d2" theme="dark" density="compact">
+      <v-btn icon href="http://gfcweb/gfc">
+        <img src="./assets/gfc.png" width="37" class="elevation-4" />
+      </v-btn>
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
+      <v-app-bar-title> 客戶資料檔維護(basd060) </v-app-bar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon href="https://next.vuetifyjs.com/en/components/buttons/">
+        <v-icon>mdi-help-circle-outline</v-icon>
+        <v-tooltip activator="parent" anchor="bottom">程式說明</v-tooltip>
       </v-btn>
     </v-app-bar>
-
     <v-main>
-      <HelloWorld/>
+      <HelloWorld />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import HelloWorld from "./components/HelloWorld.vue";
 
 export default {
-  name: 'App',
+  name: "App",
 
   components: {
     HelloWorld,
