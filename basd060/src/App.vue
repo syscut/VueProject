@@ -1,31 +1,56 @@
 <template>
   <v-app>
-    <v-app-bar color="#1976d2" theme="dark" density="compact">
-      <v-btn icon href="http://gfcweb/gfc">
-        <img src="./assets/gfc.png" width="37" class="elevation-4" />
-      </v-btn>
+    <v-app-bar app color="primary" dark hide-on-scroll dense>
+      <v-app-bar-nav-icon>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <a v-bind="attrs" v-on="on" href="http://gfcweb/gfc">
+              <v-img
+                class="elevation-4"
+                src="./assets/gfc.gif"
+                max-height="37"
+                max-width="37"
+              />
+            </a>
+          </template>
+          <span>回首頁</span>
+        </v-tooltip>
+      </v-app-bar-nav-icon>
+
       <v-spacer></v-spacer>
-      <v-app-bar-title> 客戶資料檔維護(basd060) </v-app-bar-title>
+      <v-toolbar-title> 客戶資料檔維護(basd060) </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon href="https://next.vuetifyjs.com/en/components/buttons/">
-        <v-icon>mdi-help-circle-outline</v-icon>
-        <v-tooltip activator="parent" anchor="bottom">程式說明</v-tooltip>
-      </v-btn>
+
+      <v-tooltip bottom color="primary">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            href="https://github.com/vuetifyjs/vuetify/releases/latest"
+            target="_blank"
+            v-bind="attrs"
+            v-on="on"
+            text
+          >
+            <v-icon>mdi-help-circle-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>程式說明</span>
+      </v-tooltip>
     </v-app-bar>
+
     <v-main>
-      <HelloWorld />
+      <Basd060Main />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import Basd060Main from "./components/Basd060Main";
 
 export default {
   name: "App",
 
   components: {
-    HelloWorld,
+    Basd060Main,
   },
 
   data: () => ({
