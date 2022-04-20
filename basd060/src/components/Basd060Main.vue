@@ -1,205 +1,227 @@
 <template>
-  <v-container>
-    <v-row class="mt-n7">
-      <v-col cols="3">
-        <v-text-field v-model="form.custNo">
-          <template v-slot:prepend><nobr class="mt-1">客戶編號</nobr></template>
-        </v-text-field>
-      </v-col>
-      <v-col cols="2"> </v-col>
-      <v-col cols="4">
-        <v-text-field v-model="form.mainCustno">
-          <template v-slot:prepend
-            ><nobr class="mt-1">隸屬之主客戶代號</nobr></template
+  <v-form v-model="valid" lazy-validation>
+    <v-container>
+      <v-row class="mt-n7">
+        <v-col cols="2">
+          <v-text-field :rules="dec6" :counter="6" v-model="form.custNo">
+            <template v-slot:prepend
+              ><nobr class="mt-1">客戶編號</nobr></template
+            >
+          </v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field :rules="dec6" :counter="6" v-model="form.mainCustno">
+            <template v-slot:prepend
+              ><nobr class="mt-1">隸屬之主客戶代號</nobr></template
+            >
+          </v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field
+            :rules="[unifyNoCheck(form.unifyNo)]"
+            :counter="8"
+            v-model="form.unifyNo"
           >
-        </v-text-field>
-      </v-col>
-      <v-col cols="3">
-        <v-text-field v-model="form.unifyNo">
-          <template v-slot:prepend
-            ><nobr class="mt-1">統一編號</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="10">
-        <v-text-field v-model="form.custName">
-          <template v-slot:prepend><nobr class="mt-1">客戶名稱</nobr></template>
-        </v-text-field>
-      </v-col>
-      <v-col cols="2">
-        <v-text-field v-model="form.pcsNo"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">聯數別</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="5">
-        <v-text-field v-model="form.custTel"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">客戶電話</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="5">
-        <v-text-field v-model="form.custFax"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">客戶傳真電話</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="2">
-        <v-text-field v-model="form.publicCode"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">公民營</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="2">
-        <v-text-field v-model="form.zipCode"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">客戶郵遞區號</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="3">
-        <v-text-field></v-text-field>
-      </v-col>
-      <v-col cols="1">
-        <v-btn class="ml-n2 mt-3" color="primary">...</v-btn>
-      </v-col>
-      <v-col cols="3">
-        <v-text-field v-model="form.respMan"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">負責人</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="1"></v-col>
-      <v-col cols="2">
-        <v-text-field v-model="form.txCode"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">異常碼</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="10">
-        <v-text-field v-model="form.invAddr"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">發票地址</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="2">
-        <v-text-field v-model="form.fileCode"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">客戶歸檔碼</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="5">
-        <v-text-field v-model="form.callTel"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">聯絡人電話</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="5">
-        <v-text-field v-model="form.callMan"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">聯絡人</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="3">
-        <v-text-field v-model="form.oldCustno"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">舊系統客戶代碼</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="5" class="mt-6">
-        (VNDR 表示經銷商;SALE 表示業務代表接單)
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="10">
-        <v-text-field v-model="form.remk"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">備註</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n13">
-      <v-col cols="3">
-        <v-text-field v-model="form.createId"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">建檔者</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="3">
-        <v-text-field v-model="form.createDate"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">建檔日期</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="3">
-        <v-text-field v-model="form.updateId"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">異動者</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-      <v-col cols="3">
-        <v-text-field v-model="form.updateDate"
-          ><template v-slot:prepend
-            ><nobr class="mt-1">異動日期</nobr></template
-          ></v-text-field
-        >
-      </v-col>
-    </v-row>
-    <v-row class="mt-n10">
-      <v-col cols="12" align="center"
-        ><v-card-text style="color: red">{{ errMsg }}</v-card-text></v-col
-      ></v-row
-    >
-    <v-row class="mt-n1">
-      <v-col cols="4">
-        <v-btn>新增</v-btn>
-        <v-btn>刪除</v-btn>
-        <v-btn @click="get_cust">查詢</v-btn>
-        <v-btn>讀取</v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-btn><v-icon>mdi-page-first</v-icon></v-btn>
-        <v-btn><v-icon>mdi-less-than</v-icon></v-btn>
-        <v-btn><v-icon>mdi-greater-than</v-icon></v-btn>
-        <v-btn><v-icon>mdi-page-last</v-icon></v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-btn>設定初值</v-btn>
-      </v-col>
-    </v-row>
-  </v-container>
+            <template v-slot:prepend
+              ><nobr class="mt-1">統一編號</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="2">
+          <v-text-field :rules="char1" :counter="1" v-model="form.pcsNo"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">聯數別</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="2">
+          <v-text-field :rules="char1" :counter="1" v-model="form.publicCode"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">公民營</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+      </v-row>
+      <v-row class="mt-n10">
+        <v-col cols="8">
+          <v-text-field :rules="char70" counter="70" v-model="form.custName">
+            <template v-slot:prepend
+              ><nobr class="mt-1">客戶名稱</nobr></template
+            >
+            <template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="counterVal('custName')">
+              </v-counter>
+            </template>
+          </v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field :rules="char1" :counter="1" v-model="form.txCode"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">異常碼</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="2">
+          <v-text-field :rules="char1" :counter="1" v-model="form.fileCode"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">客戶歸檔碼</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+      </v-row>
+      <v-row class="mt-n10">
+        <v-col cols="3">
+          <v-text-field :rules="char15" :counter="15" v-model="form.custTel"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">客戶電話</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="3">
+          <v-text-field :rules="char15" :counter="15" v-model="form.custFax"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">客戶傳真電話</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="3">
+          <v-text-field :rules="char10" counter="10" v-model="form.callMan"
+            ><template v-slot:prepend><nobr class="mt-1">聯絡人</nobr></template
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="counterVal('callMan')">
+              </v-counter> </template
+          ></v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field :rules="char15" :counter="15" v-model="form.callTel"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">聯絡人電話</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+      </v-row>
+      <v-row class="mt-n10">
+        <v-col cols="2">
+          <v-text-field disabled :counter="3" v-model="form.zipCode"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">客戶郵遞區號</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="3">
+          <v-text-field disabled v-model="zipArea"></v-text-field>
+        </v-col>
+        <v-col cols="1">
+          <v-btn class="ml-n2 mt-3" icon
+            ><v-icon color="blue darken-1"> mdi-dots-horizontal </v-icon></v-btn
+          >
+        </v-col>
+        <v-col cols="3">
+          <v-text-field :rules="char10" counter="10" v-model="form.respMan"
+            ><template v-slot:prepend><nobr class="mt-1">負責人</nobr></template
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="counterVal('respMan')">
+              </v-counter> </template
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row class="mt-n10">
+        <v-col cols="6">
+          <v-text-field :rules="char60" counter="60" v-model="form.invAddr"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">發票地址</nobr></template
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="counterVal('invAddr')">
+              </v-counter> </template
+          ></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
+            :rules="[(v) => v.length <= 4]"
+            :counter="4"
+            v-model="form.oldCustno"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">舊系統客戶代碼</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="4" class="mt-6">
+          (VNDR 表示經銷商;SALE 表示業務代表接單)
+        </v-col>
+      </v-row>
+      <v-row class="mt-n10">
+        <v-col cols="10">
+          <v-text-field :rules="char70" counter="70" v-model="form.remk"
+            ><template v-slot:prepend><nobr class="mt-1">備註</nobr></template
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="counterVal('remk')">
+              </v-counter> </template
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row class="mt-n10">
+        <v-col cols="3">
+          <v-text-field :rules="char10" counter="10" v-model="form.createId"
+            ><template v-slot:prepend><nobr class="mt-1">建檔者</nobr></template
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="counterVal('createId')">
+              </v-counter> </template
+          ></v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field v-model="form.createDate"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">建檔日期</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="3">
+          <v-text-field :rules="char10" counter="10" v-model="form.updateId"
+            ><template v-slot:prepend><nobr class="mt-1">異動者</nobr></template
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="counterVal('updateId')">
+              </v-counter> </template
+          ></v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field v-model="form.updateDate"
+            ><template v-slot:prepend
+              ><nobr class="mt-1">異動日期</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+      </v-row>
+      <v-row class="mt-n6">
+        <v-col style="color: red" align="center">
+          {{ errMsg }}
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="4" align="center">
+          <v-btn :disabled="!valid">新增</v-btn>
+          <v-btn :disabled="!valid">刪除此筆</v-btn>
+          <v-btn :disabled="!valid" @click="get_cust">查詢</v-btn>
+          <v-btn :disabled="!valid">確認修改</v-btn>
+        </v-col>
+        <v-col cols="4" align="center">
+          <v-btn><v-icon>mdi-page-first</v-icon></v-btn>
+          <v-btn><v-icon>mdi-less-than</v-icon></v-btn>
+          <v-btn><v-icon>mdi-greater-than</v-icon></v-btn>
+          <v-btn><v-icon>mdi-page-last</v-icon></v-btn>
+          <v-card-text>1 OF 300</v-card-text>
+        </v-col>
+        <v-col cols="4" align="center">
+          <v-btn :disabled="!valid">設定初值</v-btn>
+          <v-btn :disabled="!valid">客戶資料補充檔</v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-form>
 </template>
 
 <script>
 import axios from "axios";
-
+import { big5Utis } from "../../../lib/big5Utis";
 export default {
   name: "Basd060Main",
 
@@ -228,14 +250,46 @@ export default {
         updateId: "", // CHAR      10
         updateDate: "", // DATE
       },
-      errMsg: "",
+      zipArea: "",
+      errMsg: "錯誤訊息",
+      valid: false,
+      dec6: [(v) => v.length <= 6 || "超過6位數"],
+      char1: [(v) => v.length <= 1 || "超過1個字元"],
+      char15: [(v) => v.length <= 15 || "超過15個字元"],
+      char10: [(v) => big5Utis.countBig5Text(v) <= 10 || "超過10個字元"],
+      char60: [(v) => big5Utis.countBig5Text(v) <= 60 || "超過60個字元"],
+      char70: [(v) => big5Utis.countBig5Text(v) <= 70 || "超過70個字元"],
     };
   },
   computed: {},
   watch: {},
   methods: {
+    counterVal(s) {
+      //console.log(s);
+      return big5Utis.countBig5Text(this.form[s]);
+    },
+    unifyNoCheck(num) {
+      let numArr = Array.from("" + num, Number);
+      if (numArr.length !== 8) {
+        return "長度錯誤";
+      }
+      let mul = [1, 2, 1, 2, 1, 2, 4, 1];
+      const plus = (arr) => {
+        return arr
+          .map((v, i) => Math.floor((v * mul[i]) / 10) + ((v * mul[i]) % 10))
+          .reduce((p, c) => p + c);
+      };
+      if (numArr[6] !== 7) {
+        return plus(numArr) % 10 == 0 || "統編錯誤";
+      } else {
+        numArr[6] == 0;
+        let ans = plus(numArr);
+        return ans % 10 == 0 || (ans + 1) % 10 == 0 || "統編錯誤";
+      }
+    },
     get_cust() {
       console.log(this.form.custNo);
+      big5Utis.encodeBig5("測試");
       axios
         .post("http://localhost:5000/search", this.form)
         .then((res) => {
