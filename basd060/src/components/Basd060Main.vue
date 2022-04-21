@@ -1,19 +1,25 @@
-<template>
+<template id="test">
   <v-form v-model="valid" lazy-validation>
     <v-container>
       <v-row class="mt-n7">
         <v-col cols="2">
-          <v-text-field :rules="dec6" :counter="6" v-model="form.custNo">
+          <v-text-field :rules="dec6" counter="6" v-model="form.custNo">
             <template v-slot:prepend
               ><nobr class="mt-1">客戶編號</nobr></template
-            >
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="custCount(form.custNo)">
+              </v-counter>
+            </template>
           </v-text-field>
         </v-col>
         <v-col cols="3">
-          <v-text-field :rules="dec6" :counter="6" v-model="form.mainCustno">
+          <v-text-field :rules="dec6" counter="6" v-model="form.mainCustno">
             <template v-slot:prepend
               ><nobr class="mt-1">隸屬之主客戶代號</nobr></template
-            >
+            ><template v-slot:counter="{ props }">
+              <v-counter v-bind="props" :value="custCount(form.mainCustno)">
+              </v-counter>
+            </template>
           </v-text-field>
         </v-col>
         <v-col cols="3">
@@ -28,14 +34,24 @@
           >
         </v-col>
         <v-col cols="2">
-          <v-text-field :rules="char1" :counter="1" v-model="form.pcsNo"
+          <v-text-field
+            @blur="showInf()"
+            @focus="showInf('pcsNo')"
+            :rules="char1"
+            :counter="1"
+            v-model="form.pcsNo"
             ><template v-slot:prepend
               ><nobr class="mt-1">聯數別</nobr></template
             ></v-text-field
           >
         </v-col>
         <v-col cols="2">
-          <v-text-field :rules="char1" :counter="1" v-model="form.publicCode"
+          <v-text-field
+            @blur="showInf()"
+            @focus="showInf('publicCode')"
+            :rules="char1"
+            :counter="1"
+            v-model="form.publicCode"
             ><template v-slot:prepend
               ><nobr class="mt-1">公民營</nobr></template
             ></v-text-field
@@ -55,14 +71,24 @@
           </v-text-field>
         </v-col>
         <v-col cols="2">
-          <v-text-field :rules="char1" :counter="1" v-model="form.txCode"
+          <v-text-field
+            @blur="showInf()"
+            @focus="showInf('txCode')"
+            :rules="char1"
+            :counter="1"
+            v-model="form.txCode"
             ><template v-slot:prepend
               ><nobr class="mt-1">異常碼</nobr></template
             ></v-text-field
           >
         </v-col>
         <v-col cols="2">
-          <v-text-field :rules="char1" :counter="1" v-model="form.fileCode"
+          <v-text-field
+            @blur="showInf()"
+            @focus="showInf('fileCode')"
+            :rules="char1"
+            :counter="1"
+            v-model="form.fileCode"
             ><template v-slot:prepend
               ><nobr class="mt-1">客戶歸檔碼</nobr></template
             ></v-text-field
@@ -112,9 +138,21 @@
           <v-text-field disabled v-model="zipArea"></v-text-field>
         </v-col>
         <v-col cols="1">
-          <v-btn class="ml-n2 mt-3" icon
-            ><v-icon color="blue darken-1"> mdi-dots-horizontal </v-icon></v-btn
-          >
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                v-on="on"
+                class="ml-n2 mt-3 elevation-3"
+                color="grey"
+                dark
+                fab
+                small
+                @click="searchZip()"
+                ><v-icon dark> mdi-dots-horizontal </v-icon></v-btn
+              ></template
+            >
+            <span>搜尋郵遞區號</span>
+          </v-tooltip>
         </v-col>
         <v-col cols="3">
           <v-text-field :rules="char10" counter="10" v-model="form.respMan"
@@ -216,15 +254,20 @@
         </v-col>
       </v-row>
     </v-container>
+    <Basn021 :dialog.sync="dialog" />
   </v-form>
 </template>
 
 <script>
+import Basn021 from "../../../lib/Basn021";
 import axios from "axios";
 import { big5Utis } from "../../../lib/big5Utis";
+
 export default {
   name: "Basd060Main",
-
+  components: {
+    Basn021,
+  },
   data() {
     return {
       form: {
@@ -250,15 +293,23 @@ export default {
         updateId: "", // CHAR      10
         updateDate: "", // DATE
       },
-      zipArea: "",
-      errMsg: "錯誤訊息",
-      valid: false,
-      dec6: [(v) => v.length <= 6 || "超過6位數"],
+      dec6: [
+        (v) =>
+          v.replace(/^<=|>=|[<>=]/, "").length == 0 ||
+          !isNaN(parseFloat(v.replace(/^<=|>=|[<>=]/, ""))) ||
+          "請輸入數字",
+        (v) => v.replace(/^<=|>=|[<>=]/, "").length <= 6 || "超過6位數",
+      ],
       char1: [(v) => v.length <= 1 || "超過1個字元"],
       char15: [(v) => v.length <= 15 || "超過15個字元"],
       char10: [(v) => big5Utis.countBig5Text(v) <= 10 || "超過10個字元"],
       char60: [(v) => big5Utis.countBig5Text(v) <= 60 || "超過60個字元"],
       char70: [(v) => big5Utis.countBig5Text(v) <= 70 || "超過70個字元"],
+      zipArea: "",
+      errMsg: "",
+      userName: "",
+      dialog: false,
+      valid: false,
     };
   },
   computed: {},
@@ -268,9 +319,15 @@ export default {
       //console.log(s);
       return big5Utis.countBig5Text(this.form[s]);
     },
+    custCount(c) {
+      return c.replace(/^<=|>=|[<>=]/, "").length;
+    },
     unifyNoCheck(num) {
       let numArr = Array.from("" + num, Number);
       if (numArr.length !== 8) {
+        if (numArr.length == 0) {
+          return true;
+        }
         return "長度錯誤";
       }
       let mul = [1, 2, 1, 2, 1, 2, 4, 1];
@@ -286,6 +343,30 @@ export default {
         let ans = plus(numArr);
         return ans % 10 == 0 || (ans + 1) % 10 == 0 || "統編錯誤";
       }
+    },
+    showInf(s) {
+      switch (s) {
+        case "pcsNo":
+          this.errMsg = '"2".二聯式  "3".三聯式  "1".收銀機';
+          break;
+        case "publicCode":
+          this.errMsg =
+            '"1".民營  "2".公營  "3".公民營  "A".零售商  "B".一般  "C".委賣';
+          break;
+        case "fileCode":
+          this.errMsg = '"Y".已歸檔  "N".未歸檔';
+          break;
+        case "txCode":
+          this.errMsg =
+            '"Y".表示須於發票循環開立檔建立相對之發票客戶代號  "N".正常';
+          break;
+        default:
+          this.errMsg = "";
+          break;
+      }
+    },
+    searchZip() {
+      this.dialog = true;
     },
     get_cust() {
       console.log(this.form.custNo);
