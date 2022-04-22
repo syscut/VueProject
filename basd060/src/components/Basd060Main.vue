@@ -141,12 +141,12 @@
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-btn
-                v-on="on"
                 class="ml-n2 mt-3 elevation-3"
                 color="grey"
                 dark
                 fab
                 small
+                v-on="on"
                 @click="searchZip()"
                 ><v-icon dark> mdi-dots-horizontal </v-icon></v-btn
               ></template
@@ -259,7 +259,7 @@
 </template>
 
 <script>
-import Basn021 from "../../../lib/Basn021";
+import Basn021 from "./Basn021.vue";
 import axios from "axios";
 import { big5Utis } from "../../../lib/big5Utis";
 
@@ -310,6 +310,7 @@ export default {
       userName: "",
       dialog: false,
       valid: false,
+      showToolTip: false,
     };
   },
   computed: {},

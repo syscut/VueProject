@@ -5,7 +5,7 @@
         <v-app-bar-nav-icon>
           <v-img
             class="elevation-4"
-            src="./gfc.gif"
+            src="../assets/gfc.gif"
             max-height="37"
             max-width="37"
           />
@@ -18,14 +18,14 @@
       <v-container>
         <v-row class="mx-1">
           <v-col cols="3">
-            <v-text-field v-model="zipCode"
+            <v-text-field v-model="form.zipCode"
               ><template v-slot:prepend
                 ><nobr class="mt-1">郵遞區號</nobr></template
               ></v-text-field
             >
           </v-col>
           <v-col cols="5">
-            <v-text-field v-model="zipArea"
+            <v-text-field v-model="form.zipArea"
               ><template v-slot:prepend
                 ><nobr class="mt-1">郵遞區域</nobr></template
               ></v-text-field
@@ -36,8 +36,14 @@
             <v-btn>確認</v-btn>
           </v-col>
         </v-row>
-
+        <v-row class="mt-n9">
+          <v-col style="color: red" align="center">
+            {{ errMsg }}
+          </v-col>
+        </v-row>
         <v-data-table
+          show-select
+          single-select
           class="mx-5"
           v-model="selected"
           :headers="headers"
@@ -46,12 +52,14 @@
           loading-text="搜尋中...請稍後"
           no-data-text="尚無資料"
           no-results-text="查無資料"
-        ></v-data-table>
+        >
+        </v-data-table>
       </v-container>
     </v-card>
   </v-dialog>
 </template>
 <script>
+import axios from "axios";
 export default {
   name: "Basn021",
   props: {
@@ -66,10 +74,13 @@ export default {
   },
   data() {
     return {
-      zipCode: "100",
-      zipArea: "台北市中山區",
+      form: {
+        zipCode: "",
+        zipArea: "",
+      },
       selected: [],
       content: [],
+      errMsg: "",
     };
   },
   //ref:https://forum.quasar-framework.org/topic/4899/solve-open-close-children-s-dialog-from-parent-avoid-mutating-a-prop-directly-since-the-value-will-be/4
@@ -84,14 +95,6 @@ export default {
     },
     headers() {
       return [
-        {
-          text: "選擇",
-          width: "40px",
-          sortable: false,
-          class: "px-0",
-          cellClass: "px-0",
-          align: "center",
-        },
         {
           text: "郵遞區號",
           value: "zipCode",
@@ -120,7 +123,20 @@ export default {
     },
   },
   methods: {
-    search() {},
+    search() {
+      axios
+        .post("http://localhost:5000/basn021", this.form)
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.length == 300) {
+            this.errMsg = "資料超過300筆!";
+          }
+          this.content = res.data;
+        })
+        .catch((e) => {
+          this.errMsg = e;
+        });
+    },
   },
 };
 </script>
