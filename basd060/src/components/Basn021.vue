@@ -13,27 +13,36 @@
         <v-spacer></v-spacer>
         <v-toolbar-title> 郵遞區號檔查詢(basn021) </v-toolbar-title>
         <v-spacer></v-spacer>
-        使用者：{{ userName }}
+        使用者：{{ user_name }}
       </v-app-bar>
       <v-container>
         <v-row class="mx-1">
           <v-col cols="3">
-            <v-text-field v-model="form.zipCode"
+            <v-text-field v-model="form.zip_code"
               ><template v-slot:prepend
                 ><nobr class="mt-1">郵遞區號</nobr></template
               ></v-text-field
             >
           </v-col>
           <v-col cols="5">
-            <v-text-field v-model="form.zipArea"
+            <v-text-field v-model="form.zip_area"
               ><template v-slot:prepend
                 ><nobr class="mt-1">郵遞區域</nobr></template
               ></v-text-field
             ></v-col
           >
           <v-col class="mt-2" cols="4">
-            <v-btn @click="search()">查詢</v-btn>
-            <v-btn>確認</v-btn>
+            <v-btn class="mr-3" @click="search()"
+              >查詢
+              <v-icon right> mdi-magnify </v-icon>
+            </v-btn>
+            <v-btn
+              class="mr-n1"
+              :disabled="selected.length == 0"
+              @click="$emit('zip-inf', selected[0])"
+              >確認
+              <v-icon right> mdi-check </v-icon>
+            </v-btn>
           </v-col>
         </v-row>
         <v-row class="mt-n9">
@@ -48,10 +57,12 @@
           v-model="selected"
           :headers="headers"
           :items="content"
-          item-key="zipCode"
+          :footer-props="footerProps"
+          item-key="zip_code"
           loading-text="搜尋中...請稍後"
-          no-data-text="尚無資料"
+          no-data-text="請輸入並查詢"
           no-results-text="查無資料"
+          :items-per-page="5"
         >
         </v-data-table>
       </v-container>
@@ -67,7 +78,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    userName: {
+    user_name: {
       type: String,
       default: "胡國棟",
     },
@@ -75,8 +86,8 @@ export default {
   data() {
     return {
       form: {
-        zipCode: "",
-        zipArea: "",
+        zip_code: "",
+        zip_area: "",
       },
       selected: [],
       content: [],
@@ -97,7 +108,7 @@ export default {
       return [
         {
           text: "郵遞區號",
-          value: "zipCode",
+          value: "zip_code",
           width: "60px",
           class: "px-0",
           cellClass: "px-0",
@@ -105,7 +116,7 @@ export default {
         },
         {
           text: "郵寄郵遞區號",
-          value: "mailZipcode",
+          value: "mail_zipcode",
           width: "60px",
           class: "px-0",
           cellClass: "px-0",
@@ -113,13 +124,21 @@ export default {
         },
         {
           text: "郵遞區域",
-          value: "zipArea",
+          value: "zip_area",
           width: "80px",
           class: "px-0",
           cellClass: "px-0",
           align: "center",
         },
       ];
+    },
+    footerProps() {
+      return {
+        showFirstLastPage: true,
+        itemsPerPageAllText: "全部",
+        itemsPerPageText: "每頁顯示",
+        pageText: "第 {0} 至第 {1} 項 (共 {2} 筆)",
+      };
     },
   },
   methods: {
