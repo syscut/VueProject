@@ -25,7 +25,7 @@
         <v-col cols="3">
           <v-text-field
             :rules="[unifyNoCheck(form.unify_no)]"
-            :counter="8"
+            :counter="uniCounterVal"
             v-model="form.unify_no"
           >
             <template v-slot:prepend
@@ -236,10 +236,11 @@
       </v-row>
       <v-row>
         <v-col cols="4" align="center">
-          <v-btn :disabled="!valid">新增</v-btn>
+          <v-btn :disabled="!valid" @click="add">新增</v-btn>
           <v-btn :disabled="!valid">刪除此筆</v-btn>
           <v-btn :disabled="!valid" @click="get_cust">查詢</v-btn>
-          <v-btn :disabled="!valid">確認修改</v-btn>
+          <v-btn :disabled="!valid" @click="update">確認修改</v-btn>
+          <v-btn class="mt-2" @click="clear">清除</v-btn>
         </v-col>
         <v-col cols="4" align="center">
           <v-btn :disabled="current <= 1" @click="firstPage()"
@@ -270,6 +271,7 @@
 import Basn021 from "./Basn021.vue";
 import axios from "axios";
 import { big5Utis } from "../../../lib/big5Utis";
+import { valid } from "../../../lib/valid";
 
 export default {
   name: "Basd060Main",
@@ -285,7 +287,31 @@ export default {
         cust_fax: "", //客戶傳真 CHAR      15
         inv_addr: "", //發票地址 VARCHAR   60
         zip_code: "", //客戶郵遞區號 CHAR   3
-        //zip_area: "", //郵遞區域 CHAR      12
+        zip_area: "", //郵遞區域 CHAR      12
+        resp_man: "", //負責人 CHAR        10
+        call_man: "", //聯絡人 CHAR        10
+        call_tel: "", //聯絡人電話 CHAR     15
+        unify_no: "", //統一編號 CHAR       10
+        pcs_no: "", //聯數別"2".二聯式  "3".三聯式  "1".收銀機 CHAR  1
+        public_code: "", //公民營"1".民營  "2".公營  "3".公民營 CHAR  1
+        file_code: "", //客戶歸檔碼"Y".已歸檔  "N".未歸檔 CHAR  1
+        tx_code: "", //異常碼"Y".表示須於發票循環開立檔建立相對之發票客戶代號"N".正常 CHAR  1
+        main_custno: "", //隸屬之主客戶代號 DECIMAL    6
+        remk: "", //備註 VARCHAR   60
+        old_custno: "", //舊系統客戶代號 CHAR       4
+        create_id: "", // CHAR      10
+        create_date: "", // DATE
+        update_id: "", // CHAR      10
+        update_date: "", // DATE
+      },
+      defaultForm: {
+        cust_no: "", //客戶編號 DECIMAL    6
+        cust_name: "", //客戶名稱 VARCHAR  70
+        cust_tel: "", //客戶電話 CHAR      15
+        cust_fax: "", //客戶傳真 CHAR      15
+        inv_addr: "", //發票地址 VARCHAR   60
+        zip_code: "", //客戶郵遞區號 CHAR   3
+        zip_area: "", //郵遞區域 CHAR      12
         resp_man: "", //負責人 CHAR        10
         call_man: "", //聯絡人 CHAR        10
         call_tel: "", //聯絡人電話 CHAR     15
@@ -319,6 +345,7 @@ export default {
       user_name: "",
       current: 0,
       total: 0,
+      uniCounterVal: 8,
       dialog: false,
       valid: false,
       showToolTip: false,
@@ -327,6 +354,9 @@ export default {
   computed: {},
   watch: {},
   methods: {
+    clear() {
+      Object.assign(this.form, this.defaultForm);
+    },
     counterVal(s) {
       //console.log(s);
       return big5Utis.countBig5Text(this.form[s]);
@@ -335,30 +365,25 @@ export default {
       return ("" + c).replace(/^<=|>=|[<>=]/, "").length;
     },
     unifyNoCheck(num) {
-      let numArr = Array.from("" + num, Number);
-      if (numArr.length == 0) {
+      if (num.length == 0) {
         return true;
       }
-      //if(/^\[A-Za-z]/.test(numArr[0])){}
-
-      if (/^\d/.test(numArr[0])) {
-        if (numArr.length !== 8) {
+      if (/^[A-Za-z]/.test(num)) {
+        this.uniCounterVal = 10;
+        if (num.length !== 10) {
           return "長度錯誤";
         }
-        let mul = [1, 2, 1, 2, 1, 2, 4, 1];
-        const plus = (arr) => {
-          return arr
-            .map((v, i) => Math.floor((v * mul[i]) / 10) + ((v * mul[i]) % 10))
-            .reduce((p, c) => p + c);
-        };
-        if (numArr[6] !== 7) {
-          return plus(numArr) % 10 == 0 || "統編錯誤";
-        } else {
-          numArr[6] == 0;
-          let ans = plus(numArr);
-          return ans % 10 == 0 || (ans + 1) % 10 == 0 || "統編錯誤";
-        }
+        return valid.checkId(num);
       }
+
+      if (/^\d/.test(num)) {
+        this.uniCounterVal = 8;
+        if (num.length !== 8) {
+          return "長度錯誤";
+        }
+        return valid.checkUnify(num);
+      }
+      return "輸入錯誤";
     },
     showInf(s) {
       switch (s) {
@@ -382,11 +407,10 @@ export default {
       }
     },
     get_cust() {
-      big5Utis.encodeBig5("測試");
       axios
         .post("http://localhost:5000/search", this.form)
         .then((res) => {
-          console.log(res.data);
+          //console.log(res.data[0]);
           if (res.data.length == 300) {
             this.errMsg = "資料超過300筆!";
           }
@@ -398,11 +422,47 @@ export default {
           }
           this.total = res.data.length;
           Object.assign(this.form, res.data[0]);
+          //Object.assign(this.defaultForm, res.data[0]);
           Object.assign(this.list, res.data);
         })
         .catch((e) => {
           this.errMsg = e;
         });
+    },
+    update() {
+      let hasUpdate = false;
+
+      Object.keys(this.form).forEach((colName) => {
+        if (this.form[colName] != this.list[this.current - 1][colName]) {
+          this.defaultForm[colName] = this.form[colName];
+          hasUpdate = true;
+        }
+      });
+
+      if (hasUpdate) {
+        this.defaultForm.cust_no = this.form.cust_no;
+        this.defaultForm.update_id = "胡國棟";
+        axios
+          .post("http://localhost:5000/update", this.defaultForm)
+          .then((res) => {
+            if (res.data.status) {
+              this.errMsg = res.data.message;
+            } else {
+              this.errMsg = "更新失敗";
+            }
+          })
+          .catch((e) => {
+            this.errMsg = e;
+          });
+        //Object.values(this.defaultForm).map(String);
+        return;
+      } else {
+        this.errMsg = "沒有修改任何資料";
+        return;
+      }
+    },
+    add() {
+      Object.values(this.defaultForm).map(String);
     },
     getZipInf(e) {
       this.form.zip_code = e.zip_code;
@@ -411,19 +471,23 @@ export default {
     },
     firstPage() {
       this.current = 1;
-      Object.assign(this.form, this.list[0]);
+      this.assignObj();
     },
     prePage() {
       this.current = this.current - 1;
-      Object.assign(this.form, this.list[this.current - 1]);
+      this.assignObj();
     },
     nextPage() {
       this.current = this.current + 1;
-      Object.assign(this.form, this.list[this.current - 1]);
+      this.assignObj();
     },
     lastPage() {
       this.current = this.total;
+      this.assignObj();
+    },
+    assignObj() {
       Object.assign(this.form, this.list[this.current - 1]);
+      //Object.assign(this.defaultForm, this.list[this.current - 1]);
     },
   },
   mounted() {
