@@ -1,9 +1,14 @@
 <template id="test">
-  <v-form v-model="valid" lazy-validation>
+  <v-form v-model="valid" :disabled="formDisabled" lazy-validation>
     <v-container>
-      <v-row class="mt-n7">
+      <v-row justify="space-between" no-gutters class="mt-n4">
         <v-col cols="2">
-          <v-text-field :rules="dec6" counter="6" v-model="form.cust_no">
+          <v-text-field
+            :disabled="custNoDisabled"
+            :rules="dec6"
+            counter="6"
+            v-model="form.cust_no"
+          >
             <template v-slot:prepend
               ><nobr class="mt-1">客戶編號</nobr></template
             ><template v-slot:counter="{ props }">
@@ -22,7 +27,7 @@
             </template>
           </v-text-field>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field
             :rules="[unifyNoCheck(form.unify_no)]"
             :counter="uniCounterVal"
@@ -33,7 +38,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="2">
+        <v-col cols="1">
           <v-text-field
             @blur="showInf()"
             @focus="showInf('pcs_no')"
@@ -45,7 +50,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="2">
+        <v-col cols="1">
           <v-text-field
             @blur="showInf()"
             @focus="showInf('public_code')"
@@ -58,7 +63,7 @@
           >
         </v-col>
       </v-row>
-      <v-row class="mt-n10">
+      <v-row no-gutters class="mt-n4">
         <v-col cols="8">
           <v-text-field :rules="char70" counter="70" v-model="form.cust_name">
             <template v-slot:prepend
@@ -70,7 +75,9 @@
             </template>
           </v-text-field>
         </v-col>
-        <v-col cols="2">
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-col class="ml-7" cols="1">
           <v-text-field
             @blur="showInf()"
             @focus="showInf('tx_code')"
@@ -82,7 +89,8 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="2">
+        <v-spacer></v-spacer>
+        <v-col>
           <v-text-field
             @blur="showInf()"
             @focus="showInf('file_code')"
@@ -95,7 +103,7 @@
           >
         </v-col>
       </v-row>
-      <v-row class="mt-n10">
+      <v-row justify="space-between" class="mt-n7">
         <v-col cols="3">
           <v-text-field :rules="char15" :counter="15" v-model="form.cust_tel"
             ><template v-slot:prepend
@@ -110,7 +118,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field :rules="char10" counter="10" v-model="form.call_man"
             ><template v-slot:prepend><nobr class="mt-1">聯絡人</nobr></template
             ><template v-slot:counter="{ props }">
@@ -154,7 +162,7 @@
             <span>搜尋郵遞區號</span>
           </v-tooltip>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field :rules="char10" counter="10" v-model="form.resp_man"
             ><template v-slot:prepend><nobr class="mt-1">負責人</nobr></template
             ><template v-slot:counter="{ props }">
@@ -188,7 +196,7 @@
         </v-col>
       </v-row>
       <v-row class="mt-n10">
-        <v-col cols="10">
+        <v-col cols="8">
           <v-text-field :rules="char70" counter="70" v-model="form.remk"
             ><template v-slot:prepend><nobr class="mt-1">備註</nobr></template
             ><template v-slot:counter="{ props }">
@@ -197,8 +205,8 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-row class="mt-n10">
-        <v-col cols="3">
+      <v-row justify="space-between" class="mt-n10">
+        <v-col cols="2">
           <v-text-field :rules="char10" counter="10" v-model="form.create_id"
             ><template v-slot:prepend><nobr class="mt-1">建檔者</nobr></template
             ><template v-slot:counter="{ props }">
@@ -213,7 +221,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field :rules="char10" counter="10" v-model="form.update_id"
             ><template v-slot:prepend><nobr class="mt-1">異動者</nobr></template
             ><template v-slot:counter="{ props }">
@@ -237,10 +245,14 @@
       <v-row>
         <v-col cols="4" align="center">
           <v-btn :disabled="!valid" @click="add">新增</v-btn>
-          <v-btn :disabled="!valid">刪除此筆</v-btn>
-          <v-btn :disabled="!valid" @click="get_cust">查詢</v-btn>
-          <v-btn :disabled="!valid" @click="update">確認修改</v-btn>
-          <v-btn class="mt-2" @click="clear">清除</v-btn>
+          <v-btn :disabled="!valid || current == 0" @click="remove"
+            >刪除此筆</v-btn
+          >
+          <v-btn :disabled="!valid" @click="search">查詢</v-btn>
+          <v-btn :disabled="!valid || !modify" @click="update">確認修改</v-btn>
+          <v-btn class="mt-2" :disabled="flag == ''" @click="confirm"
+            >確認</v-btn
+          >
         </v-col>
         <v-col cols="4" align="center">
           <v-btn :disabled="current <= 1" @click="firstPage()"
@@ -258,7 +270,7 @@
           <v-card-text>{{ current }} OF {{ total }}</v-card-text>
         </v-col>
         <v-col cols="4" align="center">
-          <v-btn :disabled="!valid">設定初值</v-btn>
+          <v-btn :disabled="!valid" @click="setDefaultForm()">設定初值</v-btn>
           <v-btn :disabled="!valid">客戶資料補充檔</v-btn>
         </v-col>
       </v-row>
@@ -328,7 +340,7 @@ export default {
         update_id: "", // CHAR      10
         update_date: "", // DATE
       },
-      list: {},
+      list: [],
       dec6: [
         (v) =>
           ("" + v).replace(/^<=|>=|[<>=]/, "").length == 0 ||
@@ -342,23 +354,142 @@ export default {
       char60: [(v) => big5Utis.countBig5Text(v) <= 60 || "超過60個字元"],
       char70: [(v) => big5Utis.countBig5Text(v) <= 70 || "超過70個字元"],
       errMsg: "",
-      user_name: "",
+      user_name: "胡國棟",
+      flag: "",
       current: 0,
       total: 0,
       uniCounterVal: 8,
       dialog: false,
       valid: false,
-      showToolTip: false,
+      modify: false,
+      custNoDisabled: true,
+      formDisabled: true,
     };
   },
   computed: {},
   watch: {},
   methods: {
-    clear() {
+    add() {
+      this.formDisabled = false;
+      this.total = 0;
+      this.current = 0;
+      this.modify = false;
       Object.assign(this.form, this.defaultForm);
+      this.form.cust_no = "";
+      this.form.create_id = this.user_name;
+      this.form.update_id = this.user_name;
+      this.flag = "add";
+    },
+    search() {
+      this.formDisabled = false;
+      this.custNoDisabled = false;
+      this.total = 0;
+      this.current = 0;
+      this.modify = false;
+      Object.assign(this.form, this.defaultForm);
+      this.flag = "search";
+    },
+    confirm() {
+      switch (this.flag) {
+        case "search":
+          this.get_cust();
+          break;
+        case "add":
+          this.add_cust();
+          break;
+        default:
+          break;
+      }
+    },
+    add_cust() {
+      axios
+        .post("http://localhost:5000/create", this.form)
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.status) {
+            this.errMsg = res.data.message;
+            this.emptyDefaultFormAndFlag();
+          }
+        })
+        .catch((e) => {
+          this.errMsg = e;
+        });
+    },
+    remove() {
+      axios
+        .post("http://localhost:5000/delete", this.form)
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.status) {
+            this.errMsg = "客戶編號" + this.form.cust_no + "已刪除";
+          }
+          this.list.splice(this.current - 1, 1);
+          this.total = this.list.length;
+          if (this.current > this.total) {
+            this.current--;
+          }
+          Object.assign(this.form, this.list[this.current - 1]);
+          //Object.assign(this.defaultForm, res.data[0]);
+          this.modify = false;
+        })
+        .catch((e) => {
+          this.errMsg = e;
+        });
+    },
+    get_cust() {
+      axios
+        .post("http://localhost:5000/search", this.form)
+        .then((res) => {
+          //console.log(res.data[0]);
+          if (res.data.length == 300) {
+            this.errMsg = "資料超過300筆!";
+          }
+          if (res.data.length == 0) {
+            this.errMsg = "查無資料!";
+            this.current = 0;
+          } else {
+            this.current = 1;
+          }
+          this.total = res.data.length;
+          Object.assign(this.form, res.data[0]);
+          //Object.assign(this.defaultForm, res.data[0]);
+          Object.assign(this.list, res.data);
+          this.custNoDisabled = true;
+          this.emptyDefaultFormAndFlag();
+        })
+        .catch((e) => {
+          this.errMsg = e;
+        });
+    },
+    update() {
+      this.form.update_id = this.user_name;
+      axios
+        .post("http://localhost:5000/update", this.form)
+        .then((res) => {
+          if (res.data.status) {
+            this.errMsg = res.data.message;
+          }
+          Object.assign(this.list[this.current - 1], this.form);
+          this.emptyDefaultFormAndFlag();
+        })
+        .catch((e) => {
+          this.errMsg = e;
+        });
+      return;
+    },
+    setDefaultForm() {
+      Object.assign(this.defaultForm, this.form);
+    },
+    emptyDefaultFormAndFlag() {
+      Object.keys(this.defaultForm).map((v) => (this.defaultForm[v] = ""));
+      this.flag = "";
+    },
+    getZipInf(e) {
+      this.form.zip_code = e.zip_code;
+      this.form.zip_area = e.zip_area;
+      this.dialog = false;
     },
     counterVal(s) {
-      //console.log(s);
       return big5Utis.countBig5Text(this.form[s]);
     },
     custCount(c) {
@@ -406,69 +537,6 @@ export default {
           break;
       }
     },
-    get_cust() {
-      axios
-        .post("http://localhost:5000/search", this.form)
-        .then((res) => {
-          //console.log(res.data[0]);
-          if (res.data.length == 300) {
-            this.errMsg = "資料超過300筆!";
-          }
-          if (res.data.length == 0) {
-            this.errMsg = "查無資料!";
-            this.current = 0;
-          } else {
-            this.current = 1;
-          }
-          this.total = res.data.length;
-          Object.assign(this.form, res.data[0]);
-          //Object.assign(this.defaultForm, res.data[0]);
-          Object.assign(this.list, res.data);
-        })
-        .catch((e) => {
-          this.errMsg = e;
-        });
-    },
-    update() {
-      let hasUpdate = false;
-
-      Object.keys(this.form).forEach((colName) => {
-        if (this.form[colName] != this.list[this.current - 1][colName]) {
-          this.defaultForm[colName] = this.form[colName];
-          hasUpdate = true;
-        }
-      });
-
-      if (hasUpdate) {
-        this.defaultForm.cust_no = this.form.cust_no;
-        this.defaultForm.update_id = "胡國棟";
-        axios
-          .post("http://localhost:5000/update", this.defaultForm)
-          .then((res) => {
-            if (res.data.status) {
-              this.errMsg = res.data.message;
-            } else {
-              this.errMsg = "更新失敗";
-            }
-          })
-          .catch((e) => {
-            this.errMsg = e;
-          });
-        //Object.values(this.defaultForm).map(String);
-        return;
-      } else {
-        this.errMsg = "沒有修改任何資料";
-        return;
-      }
-    },
-    add() {
-      Object.values(this.defaultForm).map(String);
-    },
-    getZipInf(e) {
-      this.form.zip_code = e.zip_code;
-      this.form.zip_area = e.zip_area;
-      this.dialog = false;
-    },
     firstPage() {
       this.current = 1;
       this.assignObj();
@@ -487,6 +555,7 @@ export default {
     },
     assignObj() {
       Object.assign(this.form, this.list[this.current - 1]);
+      this.modify = false;
       //Object.assign(this.defaultForm, this.list[this.current - 1]);
     },
   },
