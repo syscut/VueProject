@@ -257,38 +257,44 @@
       <v-row>
         <v-col cols="4" align="center">
           <v-btn
-            class="mr-5 white--text"
+            class="mr-2 white--text"
             :disabled="flag == 'createMode'"
             color="green"
-            @click="createMode"
+            @click="createMode()"
             >新增模式<v-icon right> mdi-text-box-plus-outline </v-icon></v-btn
           >
           <v-btn
             color="primary"
             :disabled="flag == 'searchMode'"
-            @click="searchMode"
+            @click="searchMode()"
             >查詢模式<v-icon right> mdi-magnify </v-icon></v-btn
           ><v-spacer></v-spacer>
           <v-btn
-            class="mt-2 mr-2"
+            class="mt-2 mx-2"
             color="primary"
             :disabled="!valid || current == 0"
-            @click="update"
+            @click="
+              flag = 'updateMode';
+              openCheckDialog();
+            "
             >修改<v-icon right> mdi-pencil </v-icon></v-btn
           >
           <v-btn
             class="mt-2 mr-2"
             color="error"
             :disabled="current == 0"
-            @click="remove"
+            @click="
+              flag = 'removeMode';
+              openCheckDialog();
+            "
             >刪除<v-icon right> mdi-delete </v-icon></v-btn
           >
 
           <v-btn
-            class="mt-2 white--text"
-            v-show="flag != ''"
+            class="mt-2 mr-2 white--text"
+            v-show="flag == 'createMode' || flag == 'searchMode'"
             :color="flag == 'searchMode' ? 'primary' : 'green'"
-            @click="confirm"
+            @click="confirm()"
             >{{ flag == "searchMode" ? "搜尋" : "新增"
             }}<v-icon right>
               {{
@@ -322,9 +328,44 @@
       </v-row>
     </v-container>
     <Basn021 :dialog.sync="dialog" @zip-inf="getZipInf($event)" />
-    <v-dialog v-model="checkkDialog" max-width="300px">
+    <v-dialog v-model="checkDialog" max-width="500px">
       <v-card>
-        <v-card-title></v-card-title>
+        <v-card-title
+          :class="flag == 'updateMode' ? 'blue--text' : 'red--text'"
+          >{{
+            flag == "updateMode" ? "確認修改？" : "確認刪除？"
+          }}</v-card-title
+        >
+        <v-card-text>
+          <ul>
+            <li v-for="text in modifiedData" :key="text">{{ text }}</li>
+          </ul>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text color="blue darken-1" @click="checkDialog = false"
+            >取消</v-btn
+          >
+          <v-btn
+            text
+            color="red darken-1"
+            :disabled="modifiedData[0] == '沒有更改資料'"
+            @click="confirm()"
+            >確認</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="progress" hide-overlay persistent width="300">
+      <v-card color="primary" dark>
+        <v-card-text>
+          資料更新中
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </v-form>
@@ -392,6 +433,7 @@ export default {
         update_date: "", // DATE
       },
       list: [],
+      modifiedData: [],
       dec6: [
         (v) =>
           ("" + v).replace(/^<=|>=|[<>=]/, "").length == 0 ||
@@ -411,13 +453,24 @@ export default {
       total: 0,
       uniCounterVal: 8,
       dialog: false,
-      checkkDialog: false,
+      checkDialog: false,
+      progress: false,
       valid: false,
       modify: false,
     };
   },
   computed: {},
-  watch: {},
+  watch: {
+    checkDialog(val) {
+      if (!val) {
+        setTimeout(() => {
+          console.log("got");
+          this.flag = "";
+          this.modifiedData = [];
+        }, 500);
+      }
+    },
+  },
   methods: {
     createMode() {
       this.clearPageNoAndErrorMsg();
@@ -431,15 +484,31 @@ export default {
       Object.keys(this.form).forEach((key) => {
         this.form[key] = "";
       });
+      this.form.cust_no = 70008;
       this.flag = "searchMode";
     },
     confirm() {
-      if (this.flag == "createMode") {
-        this.create();
-      } else if (this.flag == "searchMode") {
-        this.search();
+      this.progress = true;
+      switch (this.flag) {
+        case "createMode":
+          this.create();
+          break;
+        case "searchMode":
+          this.search();
+          break;
+        case "updateMode":
+          this.update();
+          this.checkDialog = false;
+          break;
+        case "removeMode":
+          this.remove();
+          this.checkDialog = false;
+          break;
+        default:
+          break;
       }
       this.flag = "";
+      this.modifiedData = [];
     },
     create() {
       axios
@@ -452,6 +521,9 @@ export default {
         })
         .catch((e) => {
           this.errMsg = e;
+        })
+        .finally(() => {
+          this.progress = false;
         });
     },
     test() {
@@ -477,6 +549,9 @@ export default {
         })
         .catch((e) => {
           this.errMsg = e;
+        })
+        .finally(() => {
+          this.progress = false;
         });
     },
     remove() {
@@ -499,6 +574,9 @@ export default {
         })
         .catch((e) => {
           this.errMsg = e;
+        })
+        .finally(() => {
+          this.progress = false;
         });
     },
     update() {
@@ -513,8 +591,33 @@ export default {
         })
         .catch((e) => {
           this.errMsg = e;
+        })
+        .finally(() => {
+          this.progress = false;
         });
       return;
+    },
+    openCheckDialog() {
+      if (this.flag == "updateMode") {
+        Object.keys(this.form).forEach((v) => {
+          let oldData = this.list[this.current - 1][v];
+          let newData = this.form[v];
+          if (oldData != newData) {
+            if (oldData == "") {
+              oldData = "(空白)";
+            }
+            this.modifiedData.push("原：" + oldData + "  更改為：" + newData);
+          }
+        });
+        if (this.modifiedData.length == 0) {
+          this.modifiedData.push("沒有更改資料");
+        }
+      } else if (this.flag == "removeMode") {
+        this.modifiedData.push("刪除客戶編號：" + this.form.cust_no);
+        this.modifiedData.push("刪除客戶名稱：" + this.form.cust_name);
+      }
+
+      this.checkDialog = true;
     },
     clearPageNoAndErrorMsg() {
       this.errMsg = "";
