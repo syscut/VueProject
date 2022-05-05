@@ -1,10 +1,10 @@
 <template id="test">
-  <v-form v-model="valid" :disabled="formDisabled" lazy-validation>
+  <v-form v-model="valid" lazy-validation>
     <v-container>
       <v-row justify="space-between" no-gutters class="mt-n4">
         <v-col cols="2">
           <v-text-field
-            :disabled="custNoDisabled"
+            :disabled="flag != 'searchMode'"
             :rules="dec6"
             counter="6"
             v-model="form.cust_no"
@@ -207,7 +207,11 @@
       </v-row>
       <v-row justify="space-between" class="mt-n10">
         <v-col cols="2">
-          <v-text-field :rules="char10" counter="10" v-model="form.create_id"
+          <v-text-field
+            :disabled="flag != 'searchMode'"
+            :rules="char10"
+            counter="10"
+            v-model="form.create_id"
             ><template v-slot:prepend><nobr class="mt-1">建檔者</nobr></template
             ><template v-slot:counter="{ props }">
               <v-counter v-bind="props" :value="counterVal('create_id')">
@@ -215,14 +219,20 @@
           ></v-text-field>
         </v-col>
         <v-col cols="3">
-          <v-text-field v-model="form.create_date"
+          <v-text-field
+            :disabled="flag != 'searchMode'"
+            v-model="form.create_date"
             ><template v-slot:prepend
               ><nobr class="mt-1">建檔日期</nobr></template
             ></v-text-field
           >
         </v-col>
         <v-col cols="2">
-          <v-text-field :rules="char10" counter="10" v-model="form.update_id"
+          <v-text-field
+            :disabled="flag != 'searchMode'"
+            :rules="char10"
+            counter="10"
+            v-model="form.update_id"
             ><template v-slot:prepend><nobr class="mt-1">異動者</nobr></template
             ><template v-slot:counter="{ props }">
               <v-counter v-bind="props" :value="counterVal('update_id')">
@@ -230,7 +240,9 @@
           ></v-text-field>
         </v-col>
         <v-col cols="3">
-          <v-text-field v-model="form.update_date"
+          <v-text-field
+            :disabled="flag != 'searchMode'"
+            v-model="form.update_date"
             ><template v-slot:prepend
               ><nobr class="mt-1">異動日期</nobr></template
             ></v-text-field
@@ -244,24 +256,57 @@
       </v-row>
       <v-row>
         <v-col cols="4" align="center">
-          <v-btn :disabled="!valid" @click="add">新增</v-btn>
-          <v-btn :disabled="!valid || current == 0" @click="remove"
-            >刪除此筆</v-btn
+          <v-btn
+            class="mr-5 white--text"
+            :disabled="flag == 'createMode'"
+            color="green"
+            @click="createMode"
+            >新增模式<v-icon right> mdi-text-box-plus-outline </v-icon></v-btn
           >
-          <v-btn :disabled="!valid" @click="search">查詢</v-btn>
-          <v-btn :disabled="!valid || !modify" @click="update">確認修改</v-btn>
-          <v-btn class="mt-2" :disabled="flag == ''" @click="confirm"
-            >確認</v-btn
+          <v-btn
+            color="primary"
+            :disabled="flag == 'searchMode'"
+            @click="searchMode"
+            >查詢模式<v-icon right> mdi-magnify </v-icon></v-btn
+          ><v-spacer></v-spacer>
+          <v-btn
+            class="mt-2 mr-2"
+            color="primary"
+            :disabled="!valid || current == 0"
+            @click="update"
+            >修改<v-icon right> mdi-pencil </v-icon></v-btn
+          >
+          <v-btn
+            class="mt-2 mr-2"
+            color="error"
+            :disabled="current == 0"
+            @click="remove"
+            >刪除<v-icon right> mdi-delete </v-icon></v-btn
+          >
+
+          <v-btn
+            class="mt-2 white--text"
+            v-show="flag != ''"
+            :color="flag == 'searchMode' ? 'primary' : 'green'"
+            @click="confirm"
+            >{{ flag == "searchMode" ? "搜尋" : "新增"
+            }}<v-icon right>
+              {{
+                flag == "searchMode"
+                  ? "mdi-magnify"
+                  : "mdi-text-box-plus-outline"
+              }}
+            </v-icon></v-btn
           >
         </v-col>
         <v-col cols="4" align="center">
-          <v-btn :disabled="current <= 1" @click="firstPage()"
+          <v-btn class="mr-1" :disabled="current <= 1" @click="firstPage()"
             ><v-icon>mdi-page-first</v-icon></v-btn
           >
-          <v-btn :disabled="current <= 1" @click="prePage()"
+          <v-btn class="mr-1" :disabled="current <= 1" @click="prePage()"
             ><v-icon>mdi-less-than</v-icon></v-btn
           >
-          <v-btn :disabled="current == total" @click="nextPage()"
+          <v-btn class="mr-1" :disabled="current == total" @click="nextPage()"
             ><v-icon>mdi-greater-than</v-icon></v-btn
           >
           <v-btn :disabled="current == total" @click="lastPage()"
@@ -272,10 +317,16 @@
         <v-col cols="4" align="center">
           <v-btn :disabled="!valid" @click="setDefaultForm()">設定初值</v-btn>
           <v-btn :disabled="!valid">客戶資料補充檔</v-btn>
+          <v-btn @click="test()">測試</v-btn>
         </v-col>
       </v-row>
     </v-container>
     <Basn021 :dialog.sync="dialog" @zip-inf="getZipInf($event)" />
+    <v-dialog v-model="checkkDialog" max-width="300px">
+      <v-card>
+        <v-card-title></v-card-title>
+      </v-card>
+    </v-dialog>
   </v-form>
 </template>
 
@@ -360,55 +411,68 @@ export default {
       total: 0,
       uniCounterVal: 8,
       dialog: false,
+      checkkDialog: false,
       valid: false,
       modify: false,
-      custNoDisabled: true,
-      formDisabled: true,
     };
   },
   computed: {},
   watch: {},
   methods: {
-    add() {
-      this.formDisabled = false;
-      this.total = 0;
-      this.current = 0;
-      this.modify = false;
+    createMode() {
+      this.clearPageNoAndErrorMsg();
       Object.assign(this.form, this.defaultForm);
-      this.form.cust_no = "";
-      this.form.create_id = this.user_name;
       this.form.update_id = this.user_name;
-      this.flag = "add";
+      this.form.create_id = this.user_name;
+      this.flag = "createMode";
     },
-    search() {
-      this.formDisabled = false;
-      this.custNoDisabled = false;
-      this.total = 0;
-      this.current = 0;
-      this.modify = false;
-      Object.assign(this.form, this.defaultForm);
-      this.flag = "search";
+    searchMode() {
+      this.clearPageNoAndErrorMsg();
+      Object.keys(this.form).forEach((key) => {
+        this.form[key] = "";
+      });
+      this.flag = "searchMode";
     },
     confirm() {
-      switch (this.flag) {
-        case "search":
-          this.get_cust();
-          break;
-        case "add":
-          this.add_cust();
-          break;
-        default:
-          break;
+      if (this.flag == "createMode") {
+        this.create();
+      } else if (this.flag == "searchMode") {
+        this.search();
       }
+      this.flag = "";
     },
-    add_cust() {
+    create() {
       axios
         .post("http://localhost:5000/create", this.form)
         .then((res) => {
           console.log(res.data);
           if (res.data.status) {
             this.errMsg = res.data.message;
-            this.emptyDefaultFormAndFlag();
+          }
+        })
+        .catch((e) => {
+          this.errMsg = e;
+        });
+    },
+    test() {
+      axios.get("http://192.6.3.12/xml/xml/kim_test01.html").then((res) => {
+        Object.assign(this.form, res.data[0]);
+      });
+    },
+    search() {
+      axios
+        .post("http://localhost:5000/search", this.form)
+        .then((res) => {
+          if (res.data.length == 300) {
+            this.errMsg = "資料超過300筆!";
+          }
+          if (res.data.length == 0) {
+            this.errMsg = "查無資料!";
+          } else {
+            this.current = 1;
+            this.total = res.data.length;
+            Object.assign(this.form, res.data[0]);
+            Object.assign(this.list, res.data);
           }
         })
         .catch((e) => {
@@ -419,43 +483,19 @@ export default {
       axios
         .post("http://localhost:5000/delete", this.form)
         .then((res) => {
-          console.log(res.data);
           if (res.data.status) {
-            this.errMsg = "客戶編號" + this.form.cust_no + "已刪除";
+            this.errMsg = res.data.message;
           }
           this.list.splice(this.current - 1, 1);
           this.total = this.list.length;
           if (this.current > this.total) {
             this.current--;
           }
-          Object.assign(this.form, this.list[this.current - 1]);
-          //Object.assign(this.defaultForm, res.data[0]);
-          this.modify = false;
-        })
-        .catch((e) => {
-          this.errMsg = e;
-        });
-    },
-    get_cust() {
-      axios
-        .post("http://localhost:5000/search", this.form)
-        .then((res) => {
-          //console.log(res.data[0]);
-          if (res.data.length == 300) {
-            this.errMsg = "資料超過300筆!";
-          }
-          if (res.data.length == 0) {
-            this.errMsg = "查無資料!";
-            this.current = 0;
+          if (this.current != 0) {
+            Object.assign(this.form, this.list[this.current - 1]);
           } else {
-            this.current = 1;
+            Object.assign(this.form, this.list[0]);
           }
-          this.total = res.data.length;
-          Object.assign(this.form, res.data[0]);
-          //Object.assign(this.defaultForm, res.data[0]);
-          Object.assign(this.list, res.data);
-          this.custNoDisabled = true;
-          this.emptyDefaultFormAndFlag();
         })
         .catch((e) => {
           this.errMsg = e;
@@ -470,15 +510,25 @@ export default {
             this.errMsg = res.data.message;
           }
           Object.assign(this.list[this.current - 1], this.form);
-          this.emptyDefaultFormAndFlag();
         })
         .catch((e) => {
           this.errMsg = e;
         });
       return;
     },
+    clearPageNoAndErrorMsg() {
+      this.errMsg = "";
+      this.list = [];
+      this.total = 0;
+      this.current = 0;
+    },
     setDefaultForm() {
       Object.assign(this.defaultForm, this.form);
+      Object.assign(this.defaultForm, {
+        update_date: "",
+        create_date: "",
+        cust_no: "",
+      });
     },
     emptyDefaultFormAndFlag() {
       Object.keys(this.defaultForm).map((v) => (this.defaultForm[v] = ""));
@@ -554,8 +604,8 @@ export default {
       this.assignObj();
     },
     assignObj() {
+      this.errMsg = "";
       Object.assign(this.form, this.list[this.current - 1]);
-      this.modify = false;
       //Object.assign(this.defaultForm, this.list[this.current - 1]);
     },
   },
