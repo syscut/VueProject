@@ -359,7 +359,7 @@
     <v-dialog v-model="progress" hide-overlay persistent width="300">
       <v-card color="primary" dark>
         <v-card-text>
-          資料更新中
+          連線中...
           <v-progress-linear
             indeterminate
             color="white"
@@ -372,10 +372,11 @@
 </template>
 
 <script>
-import Basn021 from "./Basn021.vue";
+import Basn021 from "@/components/Basn021.vue";
 import axios from "axios";
 import { big5Utis } from "../../../lib/big5Utis";
 import { valid } from "../../../lib/valid";
+import { errorHandle } from "../../../lib/errorHandle";
 
 export default {
   name: "Basd060Main",
@@ -432,6 +433,30 @@ export default {
         update_id: "", // CHAR      10
         update_date: "", // DATE
       },
+      parseKeys: {
+        cust_no: "客戶編號",
+        cust_name: "客戶名稱",
+        cust_tel: "客戶電話",
+        cust_fax: "客戶傳真",
+        inv_addr: "發票地址",
+        zip_code: "客戶郵遞區號",
+        zip_area: "郵遞區域",
+        resp_man: "負責人",
+        call_man: "聯絡人",
+        call_tel: "聯絡人電話",
+        unify_no: "統一編號",
+        pcs_no: "聯數別",
+        public_code: "公民營",
+        file_code: "客戶歸檔碼",
+        tx_code: "異常碼",
+        main_custno: "隸屬之主客戶代號",
+        remk: "備註",
+        old_custno: "舊系統客戶代號",
+        create_id: "建檔者",
+        create_date: "建檔日期",
+        update_id: "異動者",
+        update_date: "異動日期",
+      },
       list: [],
       modifiedData: [],
       dec6: [
@@ -464,7 +489,6 @@ export default {
     checkDialog(val) {
       if (!val) {
         setTimeout(() => {
-          console.log("got");
           this.flag = "";
           this.modifiedData = [];
         }, 500);
@@ -472,19 +496,26 @@ export default {
     },
   },
   methods: {
+    test() {
+      // axios.get("http://192.6.3.12/xml/xml/kim_test01.html").then((res) => {
+      //   Object.assign(this.form, res.data[0]);
+      // });
+    },
     createMode() {
       this.clearPageNoAndErrorMsg();
       Object.assign(this.form, this.defaultForm);
-      this.form.update_id = this.user_name;
-      this.form.create_id = this.user_name;
+      Object.assign(this.form, {
+        update_id: this.user_name,
+        update_date: "",
+        create_id: this.user_name,
+        create_date: "",
+        cust_no: "",
+      });
       this.flag = "createMode";
     },
     searchMode() {
       this.clearPageNoAndErrorMsg();
-      Object.keys(this.form).forEach((key) => {
-        this.form[key] = "";
-      });
-      this.form.cust_no = 70008;
+      Object.assign(this.form, this.defaultForm);
       this.flag = "searchMode";
     },
     confirm() {
@@ -514,24 +545,19 @@ export default {
       axios
         .post("http://localhost:5000/create", this.form)
         .then((res) => {
-          console.log(res.data);
           if (res.data.status) {
             this.errMsg = res.data.message;
           }
         })
         .catch((e) => {
-          this.errMsg = e;
+          this.errMsg = errorHandle.errMsg(e);
         })
         .finally(() => {
           this.progress = false;
         });
     },
-    test() {
-      axios.get("http://192.6.3.12/xml/xml/kim_test01.html").then((res) => {
-        Object.assign(this.form, res.data[0]);
-      });
-    },
     search() {
+      this.setDefaultForm();
       axios
         .post("http://localhost:5000/search", this.form)
         .then((res) => {
@@ -548,7 +574,7 @@ export default {
           }
         })
         .catch((e) => {
-          this.errMsg = e;
+          this.errMsg = errorHandle.errMsg(e);
         })
         .finally(() => {
           this.progress = false;
@@ -573,7 +599,7 @@ export default {
           }
         })
         .catch((e) => {
-          this.errMsg = e;
+          this.errMsg = errorHandle.errMsg(e);
         })
         .finally(() => {
           this.progress = false;
@@ -590,7 +616,7 @@ export default {
           Object.assign(this.list[this.current - 1], this.form);
         })
         .catch((e) => {
-          this.errMsg = e;
+          this.errMsg = errorHandle.errMsg(e);
         })
         .finally(() => {
           this.progress = false;
@@ -606,7 +632,14 @@ export default {
             if (oldData == "") {
               oldData = "(空白)";
             }
-            this.modifiedData.push("原：" + oldData + "  更改為：" + newData);
+            this.modifiedData.push(
+              "原 " +
+                this.parseKeys[v] +
+                " ：" +
+                oldData +
+                "　更改為：" +
+                newData
+            );
           }
         });
         if (this.modifiedData.length == 0) {
@@ -627,11 +660,6 @@ export default {
     },
     setDefaultForm() {
       Object.assign(this.defaultForm, this.form);
-      Object.assign(this.defaultForm, {
-        update_date: "",
-        create_date: "",
-        cust_no: "",
-      });
     },
     emptyDefaultFormAndFlag() {
       Object.keys(this.defaultForm).map((v) => (this.defaultForm[v] = ""));
