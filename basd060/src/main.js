@@ -1,8 +1,8 @@
 import Vue from "vue";
-import App from "./App.vue";
+import Login from "./Login.vue";
 import vuetify from "./plugins/vuetify";
 import VueRouter from "vue-router";
-import Basd060 from "@/views/Basd060.vue";
+import Basd060 from "@/components/Basd060.vue";
 
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
@@ -10,8 +10,14 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "home",
+    name: "login",
+    component: Login,
+  },
+  {
+    path: "/basd060",
+    name: "basd060",
     component: Basd060,
+    meta: { requireAuth: true },
   },
   {
     path: "/about",
@@ -33,5 +39,5 @@ const router = new VueRouter({
 new Vue({
   vuetify,
   router,
-  render: (h) => h(App),
+  render: (h) => h(Login),
 }).$mount("#app");
