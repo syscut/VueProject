@@ -1,9 +1,9 @@
 import Vue from "vue";
-import Login from "./Login.vue";
+import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import VueRouter from "vue-router";
-import Basd060 from "@/components/Basd060.vue";
-
+import Cookies from "js-cookie";
+import NProgress from "nprogress";
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 
@@ -11,22 +11,19 @@ const routes = [
   {
     path: "/",
     name: "login",
-    component: Login,
+    component: () => import("@/components/Login.vue"),
+  },
+  {
+    path: "/menu",
+    name: "menu",
+    meta: { requireAuth: true },
+    component: () => import("@/components/MainMenu.vue"),
   },
   {
     path: "/basd060",
     name: "basd060",
-    component: Basd060,
     meta: { requireAuth: true },
-  },
-  {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "@/views/AboutView.vue"),
+    component: () => import("@/components/Basd060.vue"),
   },
 ];
 
@@ -36,8 +33,28 @@ const router = new VueRouter({
   routes,
 });
 
+router.beforeEach(async (to, from, next) => {
+  NProgress.start();
+  if (to.meta.requireAuth) {
+    const loginForm = Cookies.get("loginForm");
+    if (
+      typeof loginForm !== undefined &&
+      JSON.parse(loginForm)?.token == "rhs256"
+    ) {
+      next();
+    } else {
+      next({ name: "login" });
+    }
+  } else {
+    next();
+  }
+});
+router.afterEach(() => {
+  NProgress.done();
+});
+
 new Vue({
   vuetify,
   router,
-  render: (h) => h(Login),
+  render: (h) => h(App),
 }).$mount("#app");

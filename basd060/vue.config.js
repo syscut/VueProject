@@ -4,7 +4,7 @@ module.exports = defineConfig({
   publicPath: process.env.NODE_ENV === "production" ? "" : "/",
   chainWebpack: (config) => {
     config.plugin("html").tap((args) => {
-      args[0].title = "客戶資料檔維護(basd060)";
+      args[0].title = "崇友資訊系統";
       return args;
     });
   },
