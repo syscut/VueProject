@@ -3,7 +3,7 @@ import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import VueRouter from "vue-router";
 import Cookies from "js-cookie";
-import NProgress from "nprogress";
+
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 
@@ -34,23 +34,19 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  NProgress.start();
+  const loginForm = Cookies.get("loginForm");
   if (to.meta.requireAuth) {
-    const loginForm = Cookies.get("loginForm");
-    if (
-      typeof loginForm !== undefined &&
-      JSON.parse(loginForm)?.token == "rhs256"
-    ) {
+    if (loginForm !== undefined && JSON.parse(loginForm).token == "rhs256") {
       next();
     } else {
       next({ name: "login" });
     }
   } else {
+    if (loginForm !== undefined && JSON.parse(loginForm).token == "rhs256") {
+      next({ name: "menu" });
+    }
     next();
   }
-});
-router.afterEach(() => {
-  NProgress.done();
 });
 
 new Vue({

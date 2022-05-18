@@ -41,8 +41,8 @@
           "
           @click="logIn()"
           color="primary"
-          block
           :loading="loading"
+          block
           >登入<v-icon right>mdi-login</v-icon></v-btn
         ></v-card-text
       >
@@ -65,7 +65,8 @@ export default {
       const token = "rhs256";
       this.loginForm.token = token;
       Cookies.set("loginForm", JSON.stringify(this.loginForm), {
-        expires: 0.144,
+        expires: 1 / 96,
+        sameSite: "lax",
       });
       this.$router.push("menu");
     },
