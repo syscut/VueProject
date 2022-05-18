@@ -18,12 +18,13 @@ const routes = [
     name: "menu",
     meta: { requireAuth: true },
     component: () => import("@/components/MainMenu.vue"),
-  },
-  {
-    path: "/basd060",
-    name: "basd060",
-    meta: { requireAuth: true },
-    component: () => import("@/components/Basd060.vue"),
+    children: [
+      {
+        path: "basd060",
+        meta: { requireAuth: true },
+        components: { main: () => import("@/components/Basd060Main.vue") },
+      },
+    ],
   },
 ];
 

@@ -67,8 +67,10 @@
       </template>
     </v-app-bar>
     <v-main class="mt-3">
-      <Menu-item />
-      <v-virtual-scroll item-height="30">test</v-virtual-scroll>
+      <v-row>
+        <Menu-item />
+        <router-view name="main" />
+      </v-row>
     </v-main>
   </v-app>
 </template>
