@@ -59,8 +59,9 @@
       <template v-slot:extension>
         <v-card min-width="103%" max-height="48px" class="ml-n5" flat dark>
           <v-btn-toggle
-            ><v-btn height="24px" text>阿米巴</v-btn
-            ><v-btn height="24px" text>公司表單</v-btn
+            ><v-btn height="24px" text
+              ><router-link to="/menu/basd060">測試</router-link></v-btn
+            ><v-btn @click="test()" height="24px" text>公司表單</v-btn
             ><v-btn height="24px" text>其他網站</v-btn
             ><v-btn height="24px" text>出勤作業</v-btn
             ><v-btn height="24px" text>通訊錄建立</v-btn
@@ -113,6 +114,13 @@ export default {
   },
   data() {
     return {};
+  },
+  methods: {
+    test() {
+      this.$router.push({
+        path: "syscut.com",
+      });
+    },
   },
 };
 </script>

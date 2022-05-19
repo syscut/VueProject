@@ -15,13 +15,12 @@ const routes = [
   },
   {
     path: "/menu",
-    name: "menu",
     meta: { requireAuth: true },
     component: () => import("@/components/MainMenu.vue"),
     children: [
       {
-        path: "/",
-        props: { main: true },
+        path: ":src",
+        props: true,
         components: { main: () => import("@/components/IFrame.vue") },
       },
       {
@@ -48,7 +47,11 @@ router.beforeEach(async (to, from, next) => {
       next({ name: "login" });
     }
   } else {
-    if (loginForm !== undefined && JSON.parse(loginForm).token == "rhs256") {
+    if (
+      to.name == "login" &&
+      loginForm !== undefined &&
+      JSON.parse(loginForm).token == "rhs256"
+    ) {
       next({ path: "menu" });
     }
     next();
