@@ -20,6 +20,11 @@ const routes = [
     component: () => import("@/components/MainMenu.vue"),
     children: [
       {
+        path: "/",
+        props: { main: true },
+        components: { main: () => import("@/components/IFrame.vue") },
+      },
+      {
         path: "basd060",
         meta: { requireAuth: true },
         components: { main: () => import("@/components/Basd060Main.vue") },
@@ -44,7 +49,7 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     if (loginForm !== undefined && JSON.parse(loginForm).token == "rhs256") {
-      next({ name: "menu" });
+      next({ path: "menu" });
     }
     next();
   }

@@ -1,11 +1,15 @@
 <template>
-  <v-virtual-scroll max-width="180px" :items="menuItem" :item-height="30">
-    <template v-slot:default="{ item }">
-      <v-list-item-content>
-        <v-list-item-title>{{ item }}</v-list-item-title>
-      </v-list-item-content>
-    </template>
-  </v-virtual-scroll>
+  <v-expansion-panels accordion>
+    <v-expansion-panel v-for="item in 15" :key="item">
+      <v-expansion-panel-header>{{ item }}</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat.
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 <script>
 import Cookies from "js-cookie";
@@ -36,21 +40,21 @@ export default {
         { AMB: "阿米巴" },
         { BAS: "基本資料" },
         { BGT: "預算作業" },
-        { ACC: "會計總帳.財務分析" },
-        { ADJ: "安裝調整系統" },
-        { AMB: "阿米巴" },
-        { BAS: "基本資料" },
-        { BGT: "預算作業" },
-        { ACC: "會計總帳.財務分析" },
-        { ADJ: "安裝調整系統" },
-        { AMB: "阿米巴" },
-        { BAS: "基本資料" },
-        { BGT: "預算作業" },
-        { ACC: "會計總帳.財務分析" },
-        { ADJ: "安裝調整系統" },
-        { AMB: "阿米巴" },
-        { BAS: "基本資料" },
-        { BGT: "預算作業" },
+        { ACS: "會計總帳.財務分析" },
+        { ADD: "安裝調整系統" },
+        { AMF: "阿米巴" },
+        { BAQ: "基本資料" },
+        { BGG: "預算作業" },
+        { ACJ: "會計總帳.財務分析" },
+        { ADW: "安裝調整系統" },
+        { AMU: "阿米巴" },
+        { BAL: "基本資料" },
+        { BGV: "預算作業" },
+        { ACQ: "會計總帳.財務分析" },
+        { ADP: "安裝調整系統" },
+        { AMM: "阿米巴" },
+        { BAD: "基本資料" },
+        { BGO: "預算作業" },
       ],
     };
   },

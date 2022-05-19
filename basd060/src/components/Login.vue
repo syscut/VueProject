@@ -68,7 +68,7 @@ export default {
         expires: 1 / 96,
         sameSite: "lax",
       });
-      this.$router.push("menu");
+      this.$router.push({ path: "menu" });
     },
   },
 };
