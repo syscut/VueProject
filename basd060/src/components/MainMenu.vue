@@ -59,18 +59,27 @@
       <template v-slot:extension>
         <v-card min-width="103%" max-height="48px" class="ml-n5" flat dark>
           <v-btn-toggle
-            ><v-btn height="24px" text
-              ><router-link to="/menu/basd060">測試</router-link></v-btn
-            ><v-btn @click="test()" height="24px" text>公司表單</v-btn
-            ><v-btn height="24px" text>其他網站</v-btn
-            ><v-btn height="24px" text>出勤作業</v-btn
-            ><v-btn height="24px" text>通訊錄建立</v-btn
-            ><v-btn height="24px" text>資訊異動單</v-btn
-            ><v-btn height="24px" text>合約同步管理</v-btn
-            ><v-btn height="24px" text>製做我的網頁</v-btn
-            ><v-btn height="24px" text>未簽文件</v-btn
-            ><v-btn height="24px" text>密碼更改</v-btn
-            ><v-btn height="24px" text>e-Mail登記</v-btn></v-btn-toggle
+            ><v-menu offset-x open-on-hover
+              ><template v-slot:activator="{ on, attrs }"
+                ><v-btn v-bind="attrs" v-on="on"
+                  ><router-link to="/menu/basd060">測試</router-link></v-btn
+                ></template
+              ><v-btn-toggle dark
+                ><v-btn>測試1</v-btn><v-btn>測試2</v-btn
+                ><v-btn>測試3</v-btn></v-btn-toggle
+              ></v-menu
+            ><v-btn
+              ><router-link to="/menu/src/metq010_list"
+                >公司表單</router-link
+              ></v-btn
+            ><v-btn
+              ><router-link to="/menu/src/psnd900w_proc"
+                >其他網站</router-link
+              ></v-btn
+            ><v-btn>出勤作業</v-btn><v-btn>通訊錄建立</v-btn
+            ><v-btn>資訊異動單</v-btn><v-btn>合約同步管理</v-btn
+            ><v-btn>製做我的網頁</v-btn><v-btn>未簽文件</v-btn
+            ><v-btn>密碼更改</v-btn><v-btn>e-Mail登記</v-btn></v-btn-toggle
           ><v-card-text class="pa-0 yellow--text"
             >★★★ 提醒您 ★★★</v-card-text
           ></v-card
@@ -115,19 +124,16 @@ export default {
   data() {
     return {};
   },
-  methods: {
-    test() {
-      this.$router.push({
-        path: "syscut.com",
-      });
-    },
-  },
+  methods: {},
 };
 </script>
 <style scoped>
+.v-btn {
+  height: 24px !important;
+}
 .box {
   display: grid;
-  grid-template-columns: 180px auto;
+  grid-template-columns: 200px auto;
   grid-template-areas: "m main";
 }
 .menu {
@@ -136,7 +142,7 @@ export default {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 180px;
+  width: 200px;
 }
 .main {
   grid-area: main;

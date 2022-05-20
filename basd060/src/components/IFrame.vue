@@ -2,12 +2,13 @@
   <v-card flat>
     <iframe
       id="iFrame"
-      :src="src"
+      :src="'http://gfcweb/gfc/gfc/' + src + '.html'"
       frameborder="0"
       scrolling="no"
       width="100%"
-      height="450px"
+      height="430px"
     ></iframe>
+    src={{ src }}
     <v-dialog v-model="progress" hide-overlay persistent width="300">
       <v-card color="primary" dark>
         <v-card-text>
@@ -27,15 +28,18 @@ export default {
   name: "IFrame",
   props: {
     src: {
-      type: String,
-      default:
-        "http://gfcweb/gfc/IDe25b8e68fa1246/?MIval=/gfc/prgr100.html&lang=T",
+      default: "prgr100",
     },
   },
   data() {
     return {
       progress: false,
     };
+  },
+  watch: {
+    src() {
+      this.progress = true;
+    },
   },
   mounted() {
     this.progress = true;
