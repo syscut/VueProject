@@ -51,6 +51,7 @@
           "ignores": [
             "Basn021",
             "Basd060",
+            "Invd140",
             "Login"
           ]
         }

@@ -57,16 +57,29 @@
         </v-row>
       </template>
       <template v-slot:extension>
-        <v-card min-width="103%" max-height="48px" class="ml-n5" flat dark>
+        <v-btn
+          @click="hideMenu"
+          class="ml-n5 rounded-0 elevation-0"
+          min-width="35px"
+          min-height="47px"
+          dark
+          ><v-icon>mdi-menu</v-icon></v-btn
+        >
+        <v-card class="rounded-0" min-width="100%" max-height="48px" flat dark>
           <v-btn-toggle
             ><v-menu offset-x open-on-hover
               ><template v-slot:activator="{ on, attrs }"
                 ><v-btn v-bind="attrs" v-on="on"
-                  ><router-link to="/menu/basd060">測試</router-link></v-btn
+                  ><router-link to="/menu/basd060"
+                    >客戶資料檔維護</router-link
+                  ></v-btn
                 ></template
               ><v-btn-toggle dark
-                ><v-btn>測試1</v-btn><v-btn>測試2</v-btn
-                ><v-btn>測試3</v-btn></v-btn-toggle
+                ><v-btn
+                  ><router-link to="/menu/invd140"
+                    >一般領料單開立維護</router-link
+                  ></v-btn
+                ><v-btn>測試2</v-btn><v-btn>測試3</v-btn></v-btn-toggle
               ></v-menu
             ><v-btn
               ><router-link to="/menu/src/metq010_list"
@@ -87,8 +100,8 @@
       </template>
     </v-app-bar>
     <v-main id="view">
-      <div class="box">
-        <div class="menu">
+      <div :class="box">
+        <div :class="menu">
           <Menu-item />
         </div>
         <div class="main">
@@ -122,27 +135,48 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      box: "box-show",
+      menu: "menu-show",
+    };
   },
-  methods: {},
+  methods: {
+    hideMenu() {
+      this.box = this.box == "box-show" ? "box-hide" : "box-show";
+      this.menu = this.menu == "menu-show" ? "menu-hide" : "menu-show";
+    },
+  },
 };
 </script>
 <style scoped>
 .v-btn {
   height: 24px !important;
 }
-.box {
+.box-show {
   display: grid;
-  grid-template-columns: 200px auto;
+  grid-template-columns: 220px auto;
   grid-template-areas: "m main";
 }
-.menu {
+.box-hide {
+  display: grid;
+  grid-template-columns: 0px auto;
+  grid-template-areas: "m main";
+}
+.menu-show {
   overflow-y: scroll;
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 200px;
+  width: 220px;
+}
+.menu-hide {
+  overflow-y: scroll;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0px;
 }
 .main {
   grid-area: main;

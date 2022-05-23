@@ -31,7 +31,12 @@ const routes = [
       {
         path: "basd060",
         meta: { requireAuth: true },
-        components: { main: () => import("@/components/Basd060Main.vue") },
+        components: { main: () => import("@/components/Basd060.vue") },
+      },
+      {
+        path: "invd140",
+        meta: { requireAuth: true },
+        components: { main: () => import("@/components/Invd140.vue") },
       },
     ],
   },
