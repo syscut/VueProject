@@ -101,9 +101,11 @@
     </v-app-bar>
     <v-main id="view">
       <div :class="box">
-        <div :class="menu">
-          <Menu-item />
-        </div>
+        <v-sheet class="show-scroll-bar">
+          <div :class="menu">
+            <Menu-item />
+          </div>
+        </v-sheet>
         <div class="main">
           <router-view name="main" />
         </div>
@@ -180,5 +182,11 @@ export default {
 }
 .main {
   grid-area: main;
+}
+.menu-show::-webkit-scrollbar {
+  display: none;
+}
+.show-scroll-bar:hover .menu-show::-webkit-scrollbar {
+  display: block;
 }
 </style>
