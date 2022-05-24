@@ -50,6 +50,7 @@
         {
           "ignores": [
             "Basn021",
+            "Mafm080",
             "Basd060",
             "Invd140",
             "Login"

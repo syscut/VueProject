@@ -4,7 +4,7 @@
       <v-app-bar-nav-icon>
         <v-tooltip bottom color="primary">
           <template v-slot:activator="{ on, attrs }">
-            <a v-bind="attrs" v-on="on" href="http://gfcweb/gfc">
+            <a v-bind="attrs" v-on="on" href="#">
               <v-img
                 class="elevation-4"
                 src="@/assets/gfc.gif"
@@ -64,27 +64,56 @@
       </v-row>
       <v-row no-gutters class="mt-n4">
         <v-col cols="2">
-          <v-text-field>
+          <v-text-field v-model="maf_dept">
             <template v-slot:prepend
               ><nobr class="mt-1">部門編號</nobr></template
             ></v-text-field
           >
         </v-col>
-        <v-btn class="elevation-3 mx-2 mt-3" color="grey" icon outlined
+        <v-btn
+          @click="dialog = true"
+          class="elevation-3 mx-2 mt-4"
+          color="grey"
+          icon
+          small
+          outlined
           ><v-icon> mdi-dots-horizontal </v-icon></v-btn
         >
-        <v-col cols="3"><v-text-field></v-text-field></v-col>
+        <v-col cols="3"><v-text-field v-model="maf_name"></v-text-field></v-col>
       </v-row>
-      <v-row class="mt-n4">
-        <v-col cols="10">
+      <v-row class="mt-n2 mx-1">
+        <v-col cols="12" class="elevation-2">
           <v-data-table
+            hide-default-footer
+            calculate-widths
             show-select
             :headers="headers"
             loading-text="搜尋中...請稍後"
             no-data-text="尚無資料"
             no-results-text="查無資料"
-            hide-default-footer
-          ></v-data-table>
+          >
+            <template v-slot:top>
+              <!-- top:插入表頭 -->
+              <v-row>
+                <v-col cols="8">
+                  <v-text-field dense>
+                    <template v-slot:prepend>
+                      <v-btn
+                        class="elevation-3 mx-2"
+                        color="grey"
+                        x-small
+                        icon
+                        outlined
+                        ><v-icon> mdi-dots-horizontal </v-icon></v-btn
+                      >
+                      <nobr>材料編號細項檢索</nobr>
+                    </template>
+                  </v-text-field>
+                </v-col>
+                <v-col style="color: red">注意：一張單據最多能有12筆明細</v-col>
+              </v-row>
+            </template>
+          </v-data-table>
         </v-col>
       </v-row>
       <v-row no-gutters>
@@ -161,16 +190,24 @@
         </v-col>
       </v-row>
     </v-container>
+    <Mafm080 :dialog.sync="dialog" @maf-inf="getMafInf($event)" />
   </v-form>
 </template>
 <script>
+import Mafm080 from "@/components/Mafm080.vue";
 export default {
   name: "invd140",
+  components: {
+    Mafm080,
+  },
   data() {
     return {
+      maf_dept: "",
+      maf_name: "",
       errMsg: "",
       flag: "",
       valid: false,
+      dialog: false,
       current: 0,
       total: 0,
     };
@@ -181,6 +218,7 @@ export default {
         {
           text: "項次",
           value: "s110",
+          align: "center",
           width: "45px",
           class: "px-0",
           cellClass: "px-0",
@@ -188,6 +226,7 @@ export default {
         {
           text: "材料編號",
           value: "qt_no",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -195,6 +234,7 @@ export default {
         {
           text: "作業別",
           value: "qt_type",
+          align: "center",
           width: "70px",
           class: "px-0",
           cellClass: "px-0",
@@ -202,6 +242,7 @@ export default {
         {
           text: "製程別",
           value: "",
+          align: "center",
           width: "70px",
           class: "px-0",
           cellClass: "px-0",
@@ -209,6 +250,7 @@ export default {
         {
           text: "預定數量",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -216,6 +258,7 @@ export default {
         {
           text: "預定日期",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -223,6 +266,7 @@ export default {
         {
           text: "實際數量",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -230,6 +274,7 @@ export default {
         {
           text: "實際日期",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -237,6 +282,7 @@ export default {
         {
           text: "原因",
           value: "",
+          align: "center",
           width: "45px",
           class: "px-0",
           cellClass: "px-0",
@@ -244,6 +290,7 @@ export default {
         {
           text: "原因說明",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -251,6 +298,7 @@ export default {
         {
           text: "營業項目",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -258,6 +306,7 @@ export default {
         {
           text: "合約編號",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -265,6 +314,7 @@ export default {
         {
           text: "機號",
           value: "",
+          align: "center",
           width: "45px",
           class: "px-0",
           cellClass: "px-0",
@@ -272,6 +322,7 @@ export default {
         {
           text: "備註",
           value: "",
+          align: "center",
           width: "45px",
           class: "px-0",
           cellClass: "px-0",
@@ -279,6 +330,7 @@ export default {
         {
           text: "批次",
           value: "",
+          align: "center",
           width: "45px",
           class: "px-0",
           cellClass: "px-0",
@@ -286,6 +338,7 @@ export default {
         {
           text: "列印次數",
           value: "",
+          align: "center",
           width: "90px",
           class: "px-0",
           cellClass: "px-0",
@@ -293,11 +346,91 @@ export default {
         {
           text: "結案碼",
           value: "",
+          align: "center",
+          width: "70px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "建檔者",
+          value: "",
+          align: "center",
+          width: "70px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "建檔日期",
+          value: "",
+          align: "center",
+          width: "90px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "異動者",
+          value: "",
+          align: "center",
+          width: "70px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "異動日期",
+          value: "",
+          align: "center",
+          width: "90px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "品名",
+          value: "",
+          align: "center",
+          width: "90px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "規格",
+          value: "",
+          align: "center",
+          width: "90px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "圖號",
+          value: "",
+          align: "center",
+          width: "90px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "單位",
+          value: "",
+          align: "center",
+          width: "45px",
+          class: "px-0",
+          cellClass: "px-0",
+        },
+        {
+          text: "副番號",
+          value: "",
+          align: "center",
           width: "70px",
           class: "px-0",
           cellClass: "px-0",
         },
       ];
+    },
+  },
+  methods: {
+    getMafInf(e) {
+      this.maf_dept = e.maf_dept;
+      this.maf_name = e.maf_name;
+      this.dialog = false;
     },
   },
 };

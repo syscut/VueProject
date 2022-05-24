@@ -26,7 +26,7 @@
       </v-app-bar-nav-icon>
       <v-spacer></v-spacer>
       <v-app-bar-title style="font-size: 14px">
-        系統日期：05/17/2022 <br />使用人員：{{ userName }}
+        系統日期：{{ systemDate }} <br />使用人員：{{ userName }}
       </v-app-bar-title>
 
       <template v-slot:img>
@@ -70,23 +70,23 @@
             ><v-menu offset-x open-on-hover
               ><template v-slot:activator="{ on, attrs }"
                 ><v-btn v-bind="attrs" v-on="on"
-                  ><router-link to="/menu/basd060"
+                  ><router-link style="color: white" to="/menu/basd060"
                     >客戶資料檔維護</router-link
                   ></v-btn
                 ></template
-              ><v-btn-toggle dark
+              ><v-btn-toggle background-color="blue darken-1"
                 ><v-btn
-                  ><router-link to="/menu/invd140"
+                  ><router-link style="color: black" to="/menu/invd140"
                     >一般領料單開立維護</router-link
                   ></v-btn
                 ><v-btn>測試2</v-btn><v-btn>測試3</v-btn></v-btn-toggle
               ></v-menu
             ><v-btn
-              ><router-link to="/menu/src/metq010_list"
+              ><router-link style="color: white" to="/menu/src/metq010_list"
                 >公司表單</router-link
               ></v-btn
             ><v-btn
-              ><router-link to="/menu/src/psnd900w_proc"
+              ><router-link style="color: white" to="/menu/src/psnd900w_proc"
                 >其他網站</router-link
               ></v-btn
             ><v-btn>出勤作業</v-btn><v-btn>通訊錄建立</v-btn
@@ -100,15 +100,13 @@
       </template>
     </v-app-bar>
     <v-main id="view">
-      <div :class="box">
-        <v-sheet class="show-scroll-bar">
-          <div :class="menu">
-            <Menu-item />
-          </div>
-        </v-sheet>
-        <div class="main">
-          <router-view name="main" />
+      <v-sheet class="show-scroll-bar">
+        <div :class="menu">
+          <Menu-item />
         </div>
+      </v-sheet>
+      <div :class="main">
+        <router-view name="main" />
       </div>
     </v-main>
   </v-app>
@@ -138,14 +136,15 @@ export default {
   },
   data() {
     return {
-      box: "box-show",
+      systemDate: "05/24/2022",
       menu: "menu-show",
+      main: "main",
     };
   },
   methods: {
     hideMenu() {
-      this.box = this.box == "box-show" ? "box-hide" : "box-show";
       this.menu = this.menu == "menu-show" ? "menu-hide" : "menu-show";
+      this.main = this.main == "main" ? "main-fill" : "main";
     },
   },
 };
@@ -154,16 +153,6 @@ export default {
 .v-btn {
   height: 24px !important;
 }
-.box-show {
-  display: grid;
-  grid-template-columns: 220px auto;
-  grid-template-areas: "m main";
-}
-.box-hide {
-  display: grid;
-  grid-template-columns: 0px auto;
-  grid-template-areas: "m main";
-}
 .menu-show {
   overflow-y: scroll;
   position: absolute;
@@ -171,17 +160,24 @@ export default {
   left: 0;
   bottom: 0;
   width: 220px;
+  transition: 1s;
 }
 .menu-hide {
   overflow-y: scroll;
   position: absolute;
   top: 0;
-  left: 0;
+  left: -220px;
   bottom: 0;
-  width: 0px;
+  width: 220px;
+  transition: 1s;
 }
 .main {
-  grid-area: main;
+  padding-left: 220px;
+  transition: 1s;
+}
+.main-fill {
+  padding-left: 0;
+  transition: 1s;
 }
 .menu-show::-webkit-scrollbar {
   display: none;

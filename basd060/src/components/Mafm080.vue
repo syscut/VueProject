@@ -18,41 +18,12 @@
           </v-tooltip>
         </v-app-bar-nav-icon>
         <v-spacer></v-spacer>
-        <v-toolbar-title> 郵遞區號檔查詢(basn021) </v-toolbar-title>
+        <v-toolbar-title> 製造單位檔查詢(mafm080) </v-toolbar-title>
         <v-spacer></v-spacer>
         使用者：{{ user_name }}
       </v-app-bar>
       <v-container>
-        <v-row class="mx-1">
-          <v-col cols="3">
-            <v-text-field v-model="form.zip_code"
-              ><template v-slot:prepend
-                ><nobr class="mt-1">郵遞區號</nobr></template
-              ></v-text-field
-            >
-          </v-col>
-          <v-col cols="5">
-            <v-text-field v-model="form.zip_area"
-              ><template v-slot:prepend
-                ><nobr class="mt-1">郵遞區域</nobr></template
-              ></v-text-field
-            ></v-col
-          >
-          <v-col class="mt-2" cols="4">
-            <v-btn class="mr-3" @click="search()"
-              >查詢
-              <v-icon right> mdi-magnify </v-icon>
-            </v-btn>
-            <v-btn
-              class="mr-n1"
-              :disabled="selected.length == 0"
-              @click="$emit('zip-inf', selected[0])"
-              >確認
-              <v-icon right> mdi-check </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row class="mt-n9">
+        <v-row>
           <v-col style="color: red" align="center">
             {{ errMsg }}
           </v-col>
@@ -62,15 +33,28 @@
           single-select
           class="mx-5"
           v-model="selected"
+          :loading="loadData"
           :headers="headers"
           :items="content"
           :footer-props="footerProps"
-          item-key="zip_code"
-          loading-text="搜尋中...請稍後"
-          no-data-text="請輸入並查詢"
-          no-results-text="查無資料"
+          checkbox-color="blue"
+          item-key="maf_dept"
+          loading-text="讀取中...請稍後"
+          no-data-text="連線異常...查無資料"
           :items-per-page="5"
+          @click:row="test"
         >
+          <!-- 'v-slot' directive doesn't support any modifier 參考資料： https://stackoverflow.com/questions/61344980/v-slot-directive-doesnt-support-any-modifier -->
+          <template v-slot:[`footer.prepend`]>
+            <v-btn
+              color="green"
+              class="white--text"
+              :disabled="selected.length == 0"
+              @click="$emit('maf-inf', selected[0])"
+              >確認
+              <v-icon right> mdi-check </v-icon>
+            </v-btn>
+          </template>
         </v-data-table>
       </v-container>
     </v-card>
@@ -78,8 +62,9 @@
 </template>
 <script>
 import axios from "axios";
+import { errorHandle } from "../../../lib/errorHandle";
 export default {
-  name: "Basn021",
+  name: "Mafm080",
   props: {
     dialog: {
       type: Boolean,
@@ -92,13 +77,10 @@ export default {
   },
   data() {
     return {
-      form: {
-        zip_code: "",
-        zip_area: "",
-      },
       selected: [],
       content: [],
       errMsg: "",
+      loadData: false,
     };
   },
   //ref:https://forum.quasar-framework.org/topic/4899/solve-open-close-children-s-dialog-from-parent-avoid-mutating-a-prop-directly-since-the-value-will-be/4
@@ -114,25 +96,17 @@ export default {
     headers() {
       return [
         {
-          text: "郵遞區號",
-          value: "zip_code",
-          width: "60px",
+          text: "製造單位",
+          value: "maf_dept",
+          width: "100px",
           class: "px-0",
           cellClass: "px-0",
           align: "center",
         },
         {
-          text: "郵寄郵遞區號",
-          value: "mail_zipcode",
-          width: "60px",
-          class: "px-0",
-          cellClass: "px-0",
-          align: "center",
-        },
-        {
-          text: "郵遞區域",
-          value: "zip_area",
-          width: "80px",
+          text: "製造單位名稱",
+          value: "maf_name",
+          width: "200px",
           class: "px-0",
           cellClass: "px-0",
           align: "center",
@@ -148,21 +122,35 @@ export default {
       };
     },
   },
+  watch: {
+    $_dialog(val) {
+      if (val) {
+        this.errMsg = "";
+        this.loadData = true;
+        axios
+          .post("http://localhost:5000/mafm080")
+          .then((res) => {
+            //console.log(res.data);
+            this.content = res.data;
+          })
+          .catch((e) => {
+            this.errMsg = errorHandle.errMsg(e);
+          })
+          .finally(() => {
+            this.loadData = false;
+          });
+      }
+    },
+  },
   methods: {
-    search() {
-      axios
-        .post("http://localhost:5000/basn021", this.form)
-        .then((res) => {
-          console.log(res.data);
-          if (res.data.length == 300) {
-            this.errMsg = "資料超過300筆!";
-          }
-          this.content = res.data;
-        })
-        .catch((e) => {
-          this.errMsg = e;
-        });
+    test(e, i) {
+      i.select((v) => v);
     },
   },
 };
 </script>
+<style scoped>
+.v-data-footer__select {
+  margin: 13px 0 13px 18px !important;
+}
+</style>

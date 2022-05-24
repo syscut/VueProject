@@ -65,7 +65,7 @@ export default {
       const token = "rhs256";
       this.loginForm.token = token;
       Cookies.set("loginForm", JSON.stringify(this.loginForm), {
-        expires: 1 / 96,
+        expires: 1 / 4,
         sameSite: "lax",
       });
       this.$router.push({ path: "menu" });

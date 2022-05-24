@@ -1,11 +1,11 @@
 <template>
-  <v-card>
+  <v-sheet max-width="214px">
     <v-text-field
       v-model="searchText"
       dense
       prepend-inner-icon="mdi-magnify"
       placeholder="搜尋"
-      class="px-5"
+      class="px-5 elevation-1"
     ></v-text-field>
     <template v-if="searchPrograms.length == 0">
       <v-sheet v-for="item in menuItem" :key="item.sys_no">
@@ -17,7 +17,7 @@
               @click="getPrg($event, item.sys_no)"
               >{{ item.sys_no + "&nbsp;" + item.sys_name }}
             </v-expansion-panel-header>
-            <v-expansion-panel-content eager>
+            <v-expansion-panel-content>
               <v-sheet v-for="prg in programs" :key="prg.prg_no">
                 <v-btn
                   min-width="220px"
@@ -44,10 +44,12 @@
         >
       </v-sheet>
     </template>
-  </v-card>
+  </v-sheet>
 </template>
 <script>
 import Cookies from "js-cookie";
+import axios from "axios";
+import { errorHandle } from "../../../lib/errorHandle";
 export default {
   name: "MenuItem",
   computed: {
@@ -69,50 +71,39 @@ export default {
   },
   data() {
     return {
-      menuItem: [
-        { sys_no: "ACC", sys_name: "會計總帳.財務分析" },
-        { sys_no: "ADJ", sys_name: "安裝調整系統" },
-        { sys_no: "AMB", sys_name: "阿米巴" },
-        { sys_no: "BAS", sys_name: "基本資料" },
-        { sys_no: "BGT", sys_name: "預算作業" },
-        { sys_no: "ACS", sys_name: "會計總帳.財務分析" },
-        { sys_no: "ADD", sys_name: "安裝調整系統" },
-        { sys_no: "AMF", sys_name: "阿米巴" },
-        { sys_no: "BAQ", sys_name: "基本資料" },
-        { sys_no: "BGG", sys_name: "預算作業" },
-        { sys_no: "ACJ", sys_name: "會計總帳.財務分析" },
-        { sys_no: "ADW", sys_name: "安裝調整系統" },
-        { sys_no: "AMU", sys_name: "阿米巴" },
-        { sys_no: "BAL", sys_name: "基本資料" },
-        { sys_no: "BGV", sys_name: "預算作業" },
-        { sys_no: "ACQ", sys_name: "會計總帳.財務分析" },
-        { sys_no: "ADP", sys_name: "安裝調整系統" },
-        { sys_no: "AMM", sys_name: "阿米巴" },
-        { sys_no: "BAD", sys_name: "基本資料" },
-        { sys_no: "BGO", sys_name: "預算作業" },
-      ],
-      programs_tmp: [
-        {
-          prg_no: "accd000",
-          prg_name: "績效評估損益比率資料維護績效評估損益比率",
-        },
-        { prg_no: "accd010", prg_name: "部門代碼檔維護" },
-        { prg_no: "accd020", prg_name: "科子目檔維護" },
-        { prg_no: "adjd010", prg_name: "安裝調整工程主檔維護 " },
-        { prg_no: "adjd020", prg_name: "竣檢/消檢維護 " },
-        { prg_no: "adjd021", prg_name: "合約實際貨抵日期維護 " },
-      ],
-      programs: [
-        {
-          prg_no: "accd000",
-          prg_name: "績效評估損益比率資料維護績效評估損益比率",
-        },
-        { prg_no: "accd010", prg_name: "部門代碼檔維護" },
-        { prg_no: "accd020", prg_name: "科子目檔維護" },
-        { prg_no: "adjd010", prg_name: "安裝調整工程主檔維護 " },
-        { prg_no: "adjd020", prg_name: "竣檢/消檢維護 " },
-        { prg_no: "adjd021", prg_name: "合約實際貨抵日期維護 " },
-      ],
+      // { sys_no: "ACC", sys_name: "會計總帳.財務分析" },
+      // { sys_no: "ADJ", sys_name: "安裝調整系統" },
+      // { sys_no: "AMB", sys_name: "阿米巴" },
+      // { sys_no: "BAS", sys_name: "基本資料" },
+      // { sys_no: "BGT", sys_name: "預算作業" },
+      // { sys_no: "ACS", sys_name: "會計總帳.財務分析" },
+      // { sys_no: "ADD", sys_name: "安裝調整系統" },
+      // { sys_no: "AMF", sys_name: "阿米巴" },
+      // { sys_no: "BAQ", sys_name: "基本資料" },
+      // { sys_no: "BGG", sys_name: "預算作業" },
+      // { sys_no: "ACJ", sys_name: "會計總帳.財務分析" },
+      // { sys_no: "ADW", sys_name: "安裝調整系統" },
+      // { sys_no: "AMU", sys_name: "阿米巴" },
+      // { sys_no: "BAL", sys_name: "基本資料" },
+      // { sys_no: "BGV", sys_name: "預算作業" },
+      // { sys_no: "ACQ", sys_name: "會計總帳.財務分析" },
+      // { sys_no: "ADP", sys_name: "安裝調整系統" },
+      // { sys_no: "AMM", sys_name: "阿米巴" },
+      // { sys_no: "BAD", sys_name: "基本資料" },
+      // { sys_no: "BGO", sys_name: "預算作業" },
+
+      //  {
+      //   prg_no: "accd000",
+      //   prg_name: "績效評估損益比率資料維護績效評估損益比率",
+      // },
+      // { prg_no: "accd010", prg_name: "部門代碼檔維護" },
+      // { prg_no: "accd020", prg_name: "科子目檔維護" },
+      // { prg_no: "adjd010", prg_name: "安裝調整工程主檔維護 " },
+      // { prg_no: "adjd020", prg_name: "竣檢/消檢維護 " },
+      // { prg_no: "adjd021", prg_name: "合約實際貨抵日期維護 " },
+      menuItem: [],
+      programs_tmp: [],
+      programs: [],
       searchPrograms: [],
       searchText: "",
     };
@@ -150,6 +141,21 @@ export default {
         });
       }
     },
+  },
+  mounted() {
+    axios
+      .post("http://localhost:5000/menu")
+      .then((res) => {
+        console.log(res.data);
+        this.menuItem = res.data.menuItem;
+        this.programs = res.data.programs;
+      })
+      .catch((e) => {
+        this.errMsg = errorHandle.errMsg(e);
+      })
+      .finally(() => {
+        //this.loadData = false;
+      });
   },
 };
 </script>
