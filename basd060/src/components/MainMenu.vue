@@ -25,7 +25,7 @@
         </v-tooltip>
       </v-app-bar-nav-icon>
       <v-spacer></v-spacer>
-      <v-app-bar-title style="font-size: 14px">
+      <v-app-bar-title style="min-width: 150px; font-size: 14px">
         系統日期：{{ systemDate }} <br />使用人員：{{ empName }}
       </v-app-bar-title>
 
@@ -123,7 +123,7 @@ export default {
   data() {
     return {
       empName: "",
-      systemDate: "",
+      systemDate: "25/05/2022",
       menu: "menu-show",
       main: "main",
     };

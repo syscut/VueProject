@@ -18,11 +18,10 @@
               >{{ item.sys_no + "&nbsp;" + item.sys_name }}
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-sheet v-for="prg in programs" :key="prg.prg_no">
+              <v-sheet v-for="prg in programsOnMenu" :key="prg.prg_no">
                 <v-btn
                   min-width="220px"
                   style="text-transform: none; font-size: 0.75em"
-                  v-if="prg.prg_no.slice(0, 3).toUpperCase() == item.sys_no"
                   text
                   ><span class="text-wrap text-left" style="width: 180px">{{
                     prg.prg_name + "(" + prg.prg_no + ")"
@@ -57,6 +56,7 @@ export default {
     return {
       menuItem: [],
       programs: [],
+      programsOnMenu: [],
       searchPrograms: [],
       usrGroup: "",
       empNo: "",
@@ -68,10 +68,7 @@ export default {
       this.searchPrograms = [];
       if (val.length > 0) {
         this.programs.forEach((v) => {
-          if (
-            (v.prg_no.includes(val) || v.prg_name.includes(val)) &&
-            !this.searchPrograms.includes(v)
-          ) {
+          if (v.prg_no.includes(val) || v.prg_name.includes(val)) {
             this.searchPrograms.push(v);
           }
         });
@@ -86,14 +83,18 @@ export default {
           "v-expansion-panel-header--active"
         )
       ) {
-        this.programs_tmp.forEach((v) => {
-          if (
-            v.prg_no.slice(0, 3).toUpperCase() == sys_no &&
-            !this.programs.includes(v)
-          ) {
-            //this.programs.push(v);
-          }
-        });
+        axios
+          .post("http://localhost:5000/menuPrg", {
+            usrGroup: this.usrGroup,
+            empNo: this.empNo,
+            sysNo: sys_no,
+          })
+          .then((res) => {
+            this.programsOnMenu = res.data;
+          })
+          .catch((err) => {
+            err;
+          });
       }
     },
   },
@@ -106,7 +107,6 @@ export default {
         empNo: this.empNo,
       })
       .then((res) => {
-        console.log(res.data);
         this.menuItem = res.data.menuItem;
         this.programs = res.data.programs;
       })
