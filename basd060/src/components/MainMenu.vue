@@ -26,7 +26,7 @@
       </v-app-bar-nav-icon>
       <v-spacer></v-spacer>
       <v-app-bar-title style="font-size: 14px">
-        系統日期：{{ systemDate }} <br />使用人員：{{ userName }}
+        系統日期：{{ systemDate }} <br />使用人員：{{ empName }}
       </v-app-bar-title>
 
       <template v-slot:img>
@@ -92,7 +92,8 @@
             ><v-btn>出勤作業</v-btn><v-btn>通訊錄建立</v-btn
             ><v-btn>資訊異動單</v-btn><v-btn>合約同步管理</v-btn
             ><v-btn>製做我的網頁</v-btn><v-btn>未簽文件</v-btn
-            ><v-btn>密碼更改</v-btn><v-btn>e-Mail登記</v-btn></v-btn-toggle
+            ><v-btn>密碼更改</v-btn><v-btn>e-Mail登記</v-btn
+            ><v-btn @click="logout()">登出</v-btn></v-btn-toggle
           ><v-card-text class="pa-0 yellow--text"
             >★★★ 提醒您 ★★★</v-card-text
           ></v-card
@@ -112,31 +113,17 @@
   </v-app>
 </template>
 <script>
+import axios from "axios";
 import Cookies from "js-cookie";
 import MenuItem from "@/components/MenuItem.vue";
 export default {
   components: { MenuItem },
   name: "MainMenu",
-  computed: {
-    userName: {
-      get: function () {
-        console.log(Cookies.get("loginForm") === undefined);
-
-        if (Cookies.get("loginForm") === undefined) {
-          console.log("undefined");
-
-          return "";
-        }
-        return JSON.parse(Cookies.get("loginForm")).userName;
-      },
-      set() {
-        return JSON.parse(Cookies.get("loginForm")).userName;
-      },
-    },
-  },
+  computed: {},
   data() {
     return {
-      systemDate: "05/24/2022",
+      empName: "",
+      systemDate: "",
       menu: "menu-show",
       main: "main",
     };
@@ -146,6 +133,22 @@ export default {
       this.menu = this.menu == "menu-show" ? "menu-hide" : "menu-show";
       this.main = this.main == "main" ? "main-fill" : "main";
     },
+    logout() {
+      Cookies.remove("loginForm");
+      this.$router.push({ name: "login" });
+    },
+  },
+  mounted() {
+    axios
+      .post("http://localhost:5000/getDate")
+      .then((res) => {
+        console.log(res.data);
+        this.systemDate = res.data;
+      })
+      .catch((err) => {
+        err;
+      });
+    this.empName = JSON.parse(Cookies.get("loginForm")).empName;
   },
 };
 </script>
