@@ -54,8 +54,8 @@
 </template>
 <script>
 import Cookies from "js-cookie";
-import axios from "axios";
-import { errorHandle } from "../../../lib/errorHandle";
+// import axios from "axios";
+// import { errorHandle } from "../../../lib/errorHandle";
 export default {
   name: "Login",
   data() {
@@ -84,6 +84,7 @@ export default {
       // });
       // this.$router.push({ path: "menu" });
       //test-----------------------------------------------------------
+      // https://ithelp.ithome.com.tw/users/20129187/ironman/3137
 
       this.msg = "";
       this.loading = true;
@@ -117,6 +118,7 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+      // -----------------------------------------------------------------
     },
   },
 };

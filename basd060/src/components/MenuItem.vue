@@ -28,7 +28,17 @@
               @click="getPrg($event, item.sys_no)"
               >{{ item.sys_no + "&nbsp;" + item.sys_name }}
             </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content
+              v-if="prgLoading && loadingSys == item.sys_no"
+            >
+              <v-row align-content="center" justify="center">
+                <v-progress-circular
+                  :indeterminate="prgLoading"
+                  color="primary"
+                ></v-progress-circular>
+              </v-row>
+            </v-expansion-panel-content>
+            <v-expansion-panel-content v-else>
               <v-sheet v-for="prg in programsOnMenu" :key="prg.prg_no">
                 <v-btn
                   v-if="prg.prg_no.slice(0, 3) == item.sys_no"
@@ -62,9 +72,11 @@
             font-size: 0.75em;
             justify-content: left;
           "
+          outlined
           text
           ><router-link
-            style="color: black"
+            class="text-wrap text-left"
+            style="color: black; max-width: 190px"
             :to="'/menu/' + sPrg.exec_file.toLowerCase()"
             >{{ sPrg.prg_name + "(" + sPrg.prg_no + ")" }}</router-link
           ></v-btn
@@ -90,6 +102,7 @@ export default {
       empNo: "",
       searchText: "",
       errMsg: "",
+      loadingSys: "",
       menuLoading: false,
       prgLoading: false,
     };
@@ -117,6 +130,7 @@ export default {
           "v-expansion-panel-header--active"
         )
       ) {
+        this, (this.loadingSys = sys_no);
         this.prgLoading = true;
         axios
           .post("http://localhost:5000/menuPrg", {
@@ -136,6 +150,7 @@ export default {
           })
           .finally(() => {
             this.prgLoading = false;
+            this.loadingSys = "";
           });
       }
     },

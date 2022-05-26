@@ -38,7 +38,28 @@ const routes = [
         meta: { requireAuth: true },
         components: { main: () => import("@/components/Invd140.vue") },
       },
+      {
+        path: "404",
+        components: { main: () => import("@/components/Page404.vue") },
+        hidden: true,
+      },
+      {
+        path: "*",
+        redirect: "404",
+        hidden: true,
+      },
     ],
+  },
+  {
+    path: "/404",
+    name: "404",
+    component: () => import("@/components/Page404.vue"),
+    hidden: true,
+  },
+  {
+    path: "*",
+    redirect: "/404",
+    hidden: true,
   },
 ];
 
