@@ -25,9 +25,9 @@
         </v-tooltip>
       </v-app-bar-nav-icon>
       <v-spacer></v-spacer>
-      <v-app-bar-title style="min-width: 150px; font-size: 14px">
+      <v-sheet min-width="155px" color="#0068B0" class="white--text">
         系統日期：{{ systemDate }} <br />使用人員：{{ empName }}
-      </v-app-bar-title>
+      </v-sheet>
 
       <template v-slot:img>
         <v-row>
@@ -67,32 +67,25 @@
         >
         <v-card class="rounded-0" min-width="100%" max-height="48px" flat dark>
           <v-btn-toggle
+            ><v-btn
+              ><router-link style="color: white" to="/menu/src/ambp010w"
+                >阿米巴</router-link
+              ></v-btn
             ><v-menu offset-x open-on-hover
-              ><template v-slot:activator="{ on, attrs }"
-                ><v-btn v-bind="attrs" v-on="on"
-                  ><router-link style="color: white" to="/menu/basd060"
-                    >客戶資料檔維護</router-link
-                  ></v-btn
-                ></template
+              ><template v-slot:activator="{ on }"
+                ><v-btn v-on="on">公司表單</v-btn></template
               ><v-btn-toggle background-color="blue darken-1"
                 ><v-btn
-                  ><router-link style="color: black" to="/menu/invd140"
-                    >一般領料單開立維護</router-link
+                  ><router-link style="color: black" to="/menu/src/metq010_list"
+                    >開會通知單</router-link
                   ></v-btn
-                ><v-btn>測試2</v-btn><v-btn>測試3</v-btn></v-btn-toggle
+                ><v-btn>聯繫單</v-btn><v-btn>簽呈</v-btn></v-btn-toggle
               ></v-menu
-            ><v-btn
-              ><router-link style="color: white" to="/menu/src/metq010_list"
-                >公司表單</router-link
-              ></v-btn
-            ><v-btn
-              ><router-link style="color: white" to="/menu/src/psnd900w_proc"
-                >其他網站</router-link
-              ></v-btn
-            ><v-btn>出勤作業</v-btn><v-btn>通訊錄建立</v-btn
-            ><v-btn>資訊異動單</v-btn><v-btn>合約同步管理</v-btn
-            ><v-btn>製做我的網頁</v-btn><v-btn>未簽文件</v-btn
-            ><v-btn>密碼更改</v-btn><v-btn>e-Mail登記</v-btn
+            ><v-btn>其他網站</v-btn><v-btn>出勤作業</v-btn
+            ><v-btn>通訊錄建立</v-btn><v-btn>資訊異動單</v-btn
+            ><v-btn>合約同步管理</v-btn><v-btn>製做我的網頁</v-btn
+            ><v-btn>未簽文件</v-btn><v-btn>密碼更改</v-btn
+            ><v-btn>e-Mail登記</v-btn
             ><v-btn @click="logout()">登出</v-btn></v-btn-toggle
           ><v-card-text class="pa-0 yellow--text"
             >★★★ 提醒您 ★★★</v-card-text
@@ -123,7 +116,7 @@ export default {
   data() {
     return {
       empName: "",
-      systemDate: "25/05/2022",
+      systemDate: "",
       menu: "menu-show",
       main: "main",
     };
@@ -142,7 +135,6 @@ export default {
     axios
       .post("http://localhost:5000/getDate")
       .then((res) => {
-        console.log(res.data);
         this.systemDate = res.data;
       })
       .catch((err) => {

@@ -54,8 +54,8 @@
 </template>
 <script>
 import Cookies from "js-cookie";
-// import axios from "axios";
-// import { errorHandle } from "../../../lib/errorHandle";
+import axios from "axios";
+import { errorHandle } from "../../../lib/errorHandle";
 export default {
   name: "Login",
   data() {
@@ -74,47 +74,49 @@ export default {
   },
   methods: {
     logIn() {
-      const token = "rhs256";
-      this.loginForm.token = token;
-      this.loginForm.empName = "胡國棟";
-      this.loginForm.usrGroup = "mis";
-      Cookies.set("loginForm", JSON.stringify(this.loginForm), {
-        expires: 1 / 4,
-        sameSite: "lax",
-      });
-      this.$router.push({ path: "menu" });
-      // this.msg = "";
-      // this.loading = true;
-      // axios
-      //   .post("http://localhost:5000/login", this.loginForm)
-      //   .then((res) => {
-      //     if (res.data.status == "ok") {
-      //       const token = "rhs256";
-      //       this.loginForm.token = token;
-      //       this.loginForm.empName = res.data.empName;
-      //       this.loginForm.usrGroup = res.data.usrGroup;
+      // const token = "rhs256";
+      // this.loginForm.token = token;
+      // this.loginForm.empName = "胡國棟";
+      // this.loginForm.usrGroup = "mis";
+      // Cookies.set("loginForm", JSON.stringify(this.loginForm), {
+      //   expires: 1 / 4,
+      //   sameSite: "lax",
+      // });
+      // this.$router.push({ path: "menu" });
+      //test-----------------------------------------------------------
 
-      //       Cookies.set("loginForm", JSON.stringify(this.loginForm), {
-      //         expires: 1 / 4,
-      //         sameSite: "lax",
-      //       });
-      //       this.$router.push({ path: "menu" });
-      //     }
-      //     if (res.data.status == "invaildUserId") {
-      //       this.msg = "無效的工號";
-      //       this.loginForm.empNo = "";
-      //     }
-      //     if (res.data.status == "invaildPassWord") {
-      //       this.msg = "密碼錯誤";
-      //       this.loginForm.usrPaswd = "";
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     this.msg = errorHandle.errMsg(err);
-      //   })
-      //   .finally(() => {
-      //     this.loading = false;
-      //   });
+      this.msg = "";
+      this.loading = true;
+      axios
+        .post("http://localhost:5000/login", this.loginForm)
+        .then((res) => {
+          if (res.data.status == "ok") {
+            const token = "rhs256";
+            this.loginForm.token = token;
+            this.loginForm.empName = res.data.empName;
+            this.loginForm.usrGroup = res.data.usrGroup;
+
+            Cookies.set("loginForm", JSON.stringify(this.loginForm), {
+              expires: 1 / 4,
+              sameSite: "lax",
+            });
+            this.$router.push({ path: "menu" });
+          }
+          if (res.data.status == "invaildUserId") {
+            this.msg = "無效的工號";
+            this.loginForm.empNo = "";
+          }
+          if (res.data.status == "invaildPassWord") {
+            this.msg = "密碼錯誤";
+            this.loginForm.usrPaswd = "";
+          }
+        })
+        .catch((err) => {
+          this.msg = errorHandle.errMsg(err);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
   },
 };
