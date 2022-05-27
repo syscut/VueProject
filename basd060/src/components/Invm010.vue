@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="$_dialog" max-width="670px">
+  <v-dialog v-model="$_dialog" max-width="800px">
     <v-card>
       <v-app-bar color="primary" dark dense>
         <v-app-bar-nav-icon>
@@ -18,7 +18,7 @@
           </v-tooltip>
         </v-app-bar-nav-icon>
         <v-spacer></v-spacer>
-        <v-toolbar-title> 製造單位檔查詢(mafm080) </v-toolbar-title>
+        <v-toolbar-title> 料號細項檢索(invm010) </v-toolbar-title>
         <v-spacer></v-spacer>
         使用者：{{ emp_name }}
       </v-app-bar>
@@ -50,7 +50,7 @@
               color="green"
               class="white--text"
               :disabled="selected.length == 0"
-              @click="$emit('maf-inf', selected[0])"
+              @click="$emit('inv-inf', selected[0])"
               >確認
               <v-icon right> mdi-check </v-icon>
             </v-btn>
@@ -62,12 +62,12 @@
 </template>
 <script>
 import Cookies from "js-cookie";
-import axios from "axios";
-import { errorHandle } from "../../../lib/errorHandle";
+// import axios from "axios";
+// import { errorHandle } from "../../../lib/errorHandle";
 export default {
-  name: "Mafm080",
+  name: "Invm010",
   props: {
-    dialogMafm080: {
+    dialogInvm010: {
       type: Boolean,
       default: false,
     },
@@ -76,37 +76,85 @@ export default {
     return {
       selected: [],
       content: [],
-      emp_name: JSON.parse(Cookies.get("loginForm"))?.empName || "",
       errMsg: "",
+      emp_name: JSON.parse(Cookies.get("loginForm"))?.empName || "",
       loadData: false,
     };
   },
-  //ref:https://forum.quasar-framework.org/topic/4899/solve-open-close-children-s-dialog-from-parent-avoid-mutating-a-prop-directly-since-the-value-will-be/4
   computed: {
     $_dialog: {
       get: function () {
-        return this.dialogMafm080;
+        return this.dialogInvm010;
       },
       set: function (val) {
-        this.$emit("update:dialogMafm080", val);
+        this.$emit("update:dialogInvm010", val);
       },
     },
     headers() {
       return [
         {
-          text: "製造單位",
-          value: "maf_dept",
+          text: "料號",
+          value: "item_no",
+          width: "30px",
+          class: "px-0",
+          cellClass: "px-0",
+          align: "center",
+        },
+        {
+          text: "作業別",
+          value: "proc_code",
+          width: "35px",
+          class: "px-0",
+          cellClass: "px-0",
+          align: "center",
+        },
+        {
+          text: "製程別",
+          value: "schr_code",
+          width: "35px",
+          class: "px-0",
+          cellClass: "px-0",
+          align: "center",
+        },
+        {
+          text: "副番號",
+          value: "sbl_no",
+          width: "35px",
+          class: "px-0",
+          cellClass: "px-0",
+          align: "center",
+        },
+        {
+          text: "品名",
+          value: "item_desc",
           width: "100px",
           class: "px-0",
           cellClass: "px-0",
           align: "center",
         },
         {
-          text: "製造單位名稱",
-          value: "maf_name",
-          width: "200px",
+          text: "規格",
+          value: "item_spec",
+          width: "100px",
           class: "px-0",
           cellClass: "px-0",
+          align: "center",
+        },
+        {
+          text: "圖號",
+          value: "draw_no",
+          width: "60px",
+          class: "px-0",
+          cellClass: "px-0",
+          align: "center",
+        },
+        {
+          text: "計量單位",
+          value: "unit_measure",
+          width: "20px",
+          class: "px-0",
+          cellClass: "px-0",
+          sortable: false,
           align: "center",
         },
       ];
@@ -124,19 +172,19 @@ export default {
     $_dialog(val) {
       if (val) {
         this.errMsg = "";
-        this.loadData = true;
-        axios
-          .post("http://localhost:5000/mafm080")
-          .then((res) => {
-            //console.log(res.data);
-            this.content = res.data;
-          })
-          .catch((e) => {
-            this.errMsg = errorHandle.errMsg(e);
-          })
-          .finally(() => {
-            this.loadData = false;
-          });
+        // this.loadData = true;
+        // axios
+        //   .post("http://localhost:5000/mafm080")
+        //   .then((res) => {
+        //     //console.log(res.data);
+        //     this.content = res.data;
+        //   })
+        //   .catch((e) => {
+        //     this.errMsg = errorHandle.errMsg(e);
+        //   })
+        //   .finally(() => {
+        //     this.loadData = false;
+        //   });
       }
     },
   },

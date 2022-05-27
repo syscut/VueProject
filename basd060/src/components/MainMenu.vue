@@ -68,7 +68,7 @@
         <v-card class="rounded-0" min-width="100%" max-height="48px" flat dark>
           <v-btn-toggle
             ><v-btn
-              ><router-link style="color: white" to="/menu/src/ambp010w"
+              ><router-link class="white--text" to="/menu/src/ambp010w"
                 >阿米巴</router-link
               ></v-btn
             ><v-menu offset-x open-on-hover
@@ -76,13 +76,17 @@
                 ><v-btn v-on="on">公司表單</v-btn></template
               ><v-btn-toggle background-color="blue darken-1"
                 ><v-btn
-                  ><router-link style="color: black" to="/menu/src/metq010_list"
+                  ><router-link class="black--text" to="/menu/src/metq010_list"
                     >開會通知單</router-link
                   ></v-btn
                 ><v-btn>聯繫單</v-btn><v-btn>簽呈</v-btn></v-btn-toggle
               ></v-menu
             ><v-btn>其他網站</v-btn><v-btn>出勤作業</v-btn
-            ><v-btn>通訊錄建立</v-btn><v-btn>資訊異動單</v-btn
+            ><v-btn>通訊錄建立</v-btn
+            ><v-btn
+              ><router-link class="white--text" to="/menu/src/prgr300"
+                >資訊異動單</router-link
+              ></v-btn
             ><v-btn>合約同步管理</v-btn><v-btn>製做我的網頁</v-btn
             ><v-btn>未簽文件</v-btn><v-btn>密碼更改</v-btn
             ><v-btn>e-Mail登記</v-btn
@@ -150,6 +154,7 @@ export default {
 }
 .menu-show {
   overflow-y: scroll;
+  overflow-x: hidden;
   position: absolute;
   top: 0;
   left: 0;
@@ -159,6 +164,7 @@ export default {
 }
 .menu-hide {
   overflow-y: scroll;
+  overflow-x: hidden;
   position: absolute;
   top: 0;
   left: -220px;

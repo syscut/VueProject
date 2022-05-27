@@ -71,7 +71,7 @@
           >
         </v-col>
         <v-btn
-          @click="dialog = true"
+          @click="dialogMafm080 = true"
           class="elevation-3 mx-2 mt-4"
           color="grey"
           icon
@@ -96,9 +96,10 @@
               <!-- top:插入表頭 -->
               <v-row>
                 <v-col cols="8">
-                  <v-text-field dense>
+                  <v-text-field dense v-model="invInf">
                     <template v-slot:prepend>
                       <v-btn
+                        @click="dialogInvm010 = true"
                         class="elevation-3 mx-2"
                         color="grey"
                         x-small
@@ -190,24 +191,29 @@
         </v-col>
       </v-row>
     </v-container>
-    <Mafm080 :dialog.sync="dialog" @maf-inf="getMafInf($event)" />
+    <Mafm080 :dialogMafm080.sync="dialogMafm080" @maf-inf="getMafInf($event)" />
+    <Invm010 :dialogInvm010.sync="dialogInvm010" @inv-inf="getInvInf($event)" />
   </v-form>
 </template>
 <script>
 import Mafm080 from "@/components/Mafm080.vue";
+import Invm010 from "@/components/Invm010.vue";
 export default {
   name: "invd140",
   components: {
     Mafm080,
+    Invm010,
   },
   data() {
     return {
       maf_dept: "",
       maf_name: "",
+      invInf: "",
       errMsg: "",
       flag: "",
       valid: false,
-      dialog: false,
+      dialogMafm080: false,
+      dialogInvm010: false,
       current: 0,
       total: 0,
     };
@@ -430,7 +436,11 @@ export default {
     getMafInf(e) {
       this.maf_dept = e.maf_dept;
       this.maf_name = e.maf_name;
-      this.dialog = false;
+      this.dialogMafm080 = false;
+    },
+    getInvInf(e) {
+      this.invInf = "料號" + e.item_no;
+      this.dialogInvm010 = false;
     },
   },
 };

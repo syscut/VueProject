@@ -6,9 +6,8 @@
       frameborder="0"
       scrolling="no"
       width="100%"
-      height="430px"
+      height="470px"
     ></iframe>
-    src={{ src }}
     <v-dialog v-model="progress" hide-overlay persistent width="300">
       <v-card color="primary" dark>
         <v-card-text>
@@ -41,6 +40,7 @@ export default {
       this.progress = true;
     },
   },
+  methods: {},
   mounted() {
     this.progress = true;
     let iFrame = document.getElementById("iFrame");

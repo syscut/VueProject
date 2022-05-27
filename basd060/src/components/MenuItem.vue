@@ -28,10 +28,12 @@
               @click="getPrg($event, item.sys_no)"
               >{{ item.sys_no + "&nbsp;" + item.sys_name }}
             </v-expansion-panel-header>
-            <v-expansion-panel-content
-              v-if="prgLoading && loadingSys == item.sys_no"
-            >
-              <v-row align-content="center" justify="center">
+            <v-expansion-panel-content v-if="loadingSys == item.sys_no">
+              <v-row
+                style="min-height: 80px"
+                align-content="center"
+                justify="center"
+              >
                 <v-progress-circular
                   :indeterminate="prgLoading"
                   color="primary"
@@ -130,7 +132,7 @@ export default {
           "v-expansion-panel-header--active"
         )
       ) {
-        this, (this.loadingSys = sys_no);
+        this.loadingSys = sys_no;
         this.prgLoading = true;
         axios
           .post("http://localhost:5000/menuPrg", {

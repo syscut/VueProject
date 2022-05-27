@@ -54,8 +54,8 @@
 </template>
 <script>
 import Cookies from "js-cookie";
-// import axios from "axios";
-// import { errorHandle } from "../../../lib/errorHandle";
+import axios from "axios";
+import { errorHandle } from "../../../lib/errorHandle";
 export default {
   name: "Login",
   data() {

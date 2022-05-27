@@ -20,7 +20,7 @@
         <v-spacer></v-spacer>
         <v-toolbar-title> 郵遞區號檔查詢(basn021) </v-toolbar-title>
         <v-spacer></v-spacer>
-        使用者：{{ user_name }}
+        使用者：{{ emp_name }}
       </v-app-bar>
       <v-container>
         <v-row class="mx-1">
@@ -78,16 +78,14 @@
 </template>
 <script>
 import axios from "axios";
+import Cookies from "js-cookie";
+import { errorHandle } from "../../../lib/errorHandle";
 export default {
   name: "Basn021",
   props: {
     dialog: {
       type: Boolean,
       default: false,
-    },
-    user_name: {
-      type: String,
-      default: "胡國棟",
     },
   },
   data() {
@@ -96,6 +94,7 @@ export default {
         zip_code: "",
         zip_area: "",
       },
+      emp_name: JSON.parse(Cookies.get("loginForm"))?.empName || "",
       selected: [],
       content: [],
       errMsg: "",
@@ -160,7 +159,7 @@ export default {
           this.content = res.data;
         })
         .catch((e) => {
-          this.errMsg = e;
+          this.errMsg = errorHandle.errMsg(e);
         });
     },
   },
