@@ -73,6 +73,10 @@ router.beforeEach(async (to, from, next) => {
   const loginForm = Cookies.get("loginForm");
   if (to.meta.requireAuth) {
     if (loginForm !== undefined && JSON.parse(loginForm).token == "rhs256") {
+      document.title =
+        "崇友系統-" +
+        JSON.parse(loginForm).empNo +
+        JSON.parse(loginForm).usrGroup;
       next();
     } else {
       next({ name: "login" });
@@ -83,8 +87,13 @@ router.beforeEach(async (to, from, next) => {
       loginForm !== undefined &&
       JSON.parse(loginForm).token == "rhs256"
     ) {
+      document.title =
+        "崇友系統-" +
+        JSON.parse(loginForm).empNo +
+        JSON.parse(loginForm).usrGroup;
       next({ path: "menu" });
     }
+    document.title = "崇友系統";
     next();
   }
 });

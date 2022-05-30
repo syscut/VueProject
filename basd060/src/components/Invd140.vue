@@ -64,7 +64,7 @@
       </v-row>
       <v-row no-gutters class="mt-n4">
         <v-col cols="2">
-          <v-text-field v-model="maf_dept">
+          <v-text-field disabled v-model="maf_dept">
             <template v-slot:prepend
               ><nobr class="mt-1">部門編號</nobr></template
             ></v-text-field
@@ -79,7 +79,9 @@
           outlined
           ><v-icon> mdi-dots-horizontal </v-icon></v-btn
         >
-        <v-col cols="3"><v-text-field v-model="maf_name"></v-text-field></v-col>
+        <v-col cols="3"
+          ><v-text-field disabled v-model="maf_name"></v-text-field
+        ></v-col>
       </v-row>
       <v-row class="mt-n2 mx-1">
         <v-col cols="12" class="elevation-2">

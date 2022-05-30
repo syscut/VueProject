@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="$_dialog" max-width="670px">
+  <v-dialog v-model="$_dialog" max-width="600px">
     <v-card>
       <v-app-bar color="primary" dark dense>
         <v-app-bar-nav-icon>
@@ -37,23 +37,33 @@
           :headers="headers"
           :items="content"
           :footer-props="footerProps"
+          :search="search"
           checkbox-color="blue"
           item-key="maf_dept"
           loading-text="讀取中...請稍後"
-          no-data-text="連線異常...查無資料"
+          no-data-text="查無資料"
+          no-results-text="查無資料"
           :items-per-page="5"
           @click:row="test"
         >
-          <!-- 'v-slot' directive doesn't support any modifier 參考資料： https://stackoverflow.com/questions/61344980/v-slot-directive-doesnt-support-any-modifier -->
-          <template v-slot:[`footer.prepend`]>
-            <v-btn
-              color="green"
-              class="white--text"
-              :disabled="selected.length == 0"
-              @click="$emit('maf-inf', selected[0])"
-              >確認
-              <v-icon right> mdi-check </v-icon>
-            </v-btn>
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title> 搜尋： </v-toolbar-title>
+              <v-text-field
+                v-model="search"
+                class="mx-4 mb-n5"
+                append-icon="mdi-magnify"
+              >
+              </v-text-field>
+              <v-btn
+                color="green"
+                class="white--text"
+                :disabled="selected.length == 0"
+                @click="$emit('maf-inf', selected[0])"
+                >確認
+                <v-icon right> mdi-check </v-icon>
+              </v-btn>
+            </v-toolbar>
           </template>
         </v-data-table>
       </v-container>
@@ -78,6 +88,7 @@ export default {
       content: [],
       emp_name: JSON.parse(Cookies.get("loginForm"))?.empName || "",
       errMsg: "",
+      search: "",
       loadData: false,
     };
   },
@@ -149,6 +160,9 @@ export default {
 </script>
 <style scoped>
 .v-data-footer__select {
-  margin: 13px 0 13px 18px !important;
+  margin: 5px 0 5px 18px !important;
+}
+.v-data-footer__pagination {
+  margin: 0 5px 0 5px;
 }
 </style>

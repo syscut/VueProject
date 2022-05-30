@@ -98,7 +98,6 @@ export default {
             this.loginForm.usrGroup = res.data.usrGroup;
 
             Cookies.set("loginForm", JSON.stringify(this.loginForm), {
-              expires: 1 / 4,
               sameSite: "lax",
             });
             this.$router.push({ path: "menu" });

@@ -23,8 +23,35 @@
         使用者：{{ emp_name }}
       </v-app-bar>
       <v-container>
+        <v-row class="ml-3 my-n5" align-content="center" justify="center">
+          <v-col cols="2">
+            <v-text-field v-model="invForm.item_no" label="料號"> </v-text-field
+          ></v-col>
+          <v-col cols="2">
+            <v-text-field v-model="invForm.proc_code" label="作業別">
+            </v-text-field
+          ></v-col>
+          <v-col cols="1">
+            <v-text-field v-model="invForm.schr_code" label="製程別">
+            </v-text-field
+          ></v-col>
+          <v-col cols="1">
+            <v-text-field v-model="invForm.sbl_no" label="副番號">
+            </v-text-field
+          ></v-col>
+          <v-col cols="4">
+            <v-text-field v-model="invForm.item_desc" label="品名">
+            </v-text-field
+          ></v-col>
+          <v-col cols="2" align-self="center">
+            <v-btn color="primary" class="white--text" @click="search()"
+              >查詢
+              <v-icon right> mdi-magnify </v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
         <v-row>
-          <v-col style="color: red" align="center">
+          <v-col class="red--text mt-n5" align="center">
             {{ errMsg }}
           </v-col>
         </v-row>
@@ -38,11 +65,12 @@
           :items="content"
           :footer-props="footerProps"
           checkbox-color="blue"
-          item-key="maf_dept"
+          item-key="rowid"
           loading-text="讀取中...請稍後"
-          no-data-text="連線異常...查無資料"
+          no-data-text="查無資料"
+          no-results-text="查無資料"
           :items-per-page="5"
-          @click:row="test"
+          @click:row="selectRow"
         >
           <!-- 'v-slot' directive doesn't support any modifier 參考資料： https://stackoverflow.com/questions/61344980/v-slot-directive-doesnt-support-any-modifier -->
           <template v-slot:[`footer.prepend`]>
@@ -62,8 +90,8 @@
 </template>
 <script>
 import Cookies from "js-cookie";
-// import axios from "axios";
-// import { errorHandle } from "../../../lib/errorHandle";
+import axios from "axios";
+import { errorHandle } from "../../../lib/errorHandle";
 export default {
   name: "Invm010",
   props: {
@@ -76,7 +104,14 @@ export default {
     return {
       selected: [],
       content: [],
-      errMsg: "",
+      errMsg: "123",
+      invForm: {
+        item_no: "",
+        proc_code: "",
+        schr_code: "",
+        sbl_no: "",
+        item_desc: "",
+      },
       emp_name: JSON.parse(Cookies.get("loginForm"))?.empName || "",
       loadData: false,
     };
@@ -168,29 +203,19 @@ export default {
       };
     },
   },
-  watch: {
-    $_dialog(val) {
-      if (val) {
-        this.errMsg = "";
-        // this.loadData = true;
-        // axios
-        //   .post("http://localhost:5000/mafm080")
-        //   .then((res) => {
-        //     //console.log(res.data);
-        //     this.content = res.data;
-        //   })
-        //   .catch((e) => {
-        //     this.errMsg = errorHandle.errMsg(e);
-        //   })
-        //   .finally(() => {
-        //     this.loadData = false;
-        //   });
-      }
-    },
-  },
   methods: {
-    test(e, i) {
+    selectRow(e, i) {
       i.select((v) => v);
+    },
+    search() {
+      axios
+        .post("http://localhost:5000/invm010", this.invForm)
+        .then((res) => {
+          this.content = res.data;
+        })
+        .catch((e) => {
+          this.errMsg = errorHandle.errMsg(e);
+        });
     },
   },
 };
