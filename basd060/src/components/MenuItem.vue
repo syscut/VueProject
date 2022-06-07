@@ -44,21 +44,14 @@
               <v-sheet v-for="prg in programsOnMenu" :key="prg.prg_no">
                 <v-btn
                   v-if="prg.prg_no.slice(0, 3) == item.sys_no"
-                  min-width="214px"
-                  style="
-                    text-transform: lowercase;
-                    font-size: 0.75em;
-                    justify-content: left;
-                  "
+                  width="214px"
+                  style="font-size: 0.75em; justify-content: left; flex: auto"
+                  class="text-lowercase text-wrap"
+                  :to="'/menu/' + prg.exec_file.toLowerCase()"
                   outlined
                   text
-                  ><router-link
-                    class="text-wrap text-left"
-                    style="color: black; max-width: 190px"
-                    :to="'/menu/' + prg.exec_file.toLowerCase()"
-                    >{{ prg.prg_name + "(" + prg.prg_no + ")" }}</router-link
-                  ></v-btn
-                >
+                  >{{ prg.prg_name + "(" + prg.prg_no + ")" }}
+                </v-btn>
               </v-sheet>
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -68,21 +61,14 @@
     <template v-else>
       <v-sheet v-for="sPrg in searchPrograms" :key="sPrg.prg_no">
         <v-btn
-          min-width="250px"
-          style="
-            text-transform: lowercase;
-            font-size: 0.75em;
-            justify-content: left;
-          "
+          width="214px"
+          style="font-size: 0.75em; justify-content: left; flex: auto"
+          class="text-lowercase text-wrap"
+          :to="'/menu/' + sPrg.exec_file.toLowerCase()"
           outlined
           text
-          ><router-link
-            class="text-wrap text-left"
-            style="color: black; max-width: 190px"
-            :to="'/menu/' + sPrg.exec_file.toLowerCase()"
-            >{{ sPrg.prg_name + "(" + sPrg.prg_no + ")" }}</router-link
-          ></v-btn
-        >
+          >{{ sPrg.prg_name + "(" + sPrg.prg_no + ")" }}
+        </v-btn>
       </v-sheet>
     </template>
   </v-sheet>
