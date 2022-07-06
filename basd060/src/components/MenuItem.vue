@@ -45,8 +45,7 @@
                 <v-btn
                   v-if="prg.prg_no.slice(0, 3) == item.sys_no"
                   width="214px"
-                  style="font-size: 0.75em; justify-content: left; flex: auto"
-                  class="text-lowercase text-wrap"
+                  class="text-lowercase justify-start flex-def"
                   :to="'/menu/' + prg.exec_file.toLowerCase()"
                   outlined
                   text
@@ -62,8 +61,7 @@
       <v-sheet v-for="sPrg in searchPrograms" :key="sPrg.prg_no">
         <v-btn
           width="214px"
-          style="font-size: 0.75em; justify-content: left; flex: auto"
-          class="text-lowercase text-wrap"
+          class="text-lowercase justify-start flex-def"
           :to="'/menu/' + sPrg.exec_file.toLowerCase()"
           outlined
           text
@@ -168,5 +166,10 @@ export default {
 <style scoped>
 .v-expansion-panel-content >>> .v-expansion-panel-content__wrap {
   padding: 0 !important;
+}
+.flex-def >>> .v-btn__content{
+  white-space: initial !important;
+  flex: auto !important;
+  font-size: 0.85em;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <v-row class="ma-0">
-    <v-img src="@/assets/signin-bg.jpg" class="LoginBg"></v-img>
+    <v-img src="@/assets/signin-bg(2).jpg" class="LoginBg"></v-img>
     <v-card class="ma-auto elevation-8 rounded-lg" width="350px">
       <v-card-title
         style="
@@ -22,6 +22,7 @@
           prepend-icon="mdi-account"
           label="工號"
           :autofocus="true"
+          v-on:keyup.enter="logIn()"
         ></v-text-field>
         <v-text-field
           v-model="loginForm.usrPaswd"
@@ -29,6 +30,7 @@
           maxlength="6"
           prepend-icon="mdi-lock"
           label="密碼"
+          v-on:keyup.enter="logIn()"
           :append-icon="showPassWord ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassWord ? 'text' : 'password'"
           @click:append="showPassWord = !showPassWord"
@@ -87,6 +89,14 @@ export default {
       // https://ithelp.ithome.com.tw/users/20129187/ironman/3137
 
       this.msg = "";
+      if(this.loginForm.empNo == ""){
+        this.msg = "工號空白"
+        return;
+      }
+      if(this.loginForm.usrPaswd == ""){
+        this.msg = "密碼空白"
+        return;
+      }
       this.loading = true;
       axios
         .post("http://localhost:5000/login", this.loginForm)
@@ -116,6 +126,9 @@ export default {
         })
         .finally(() => {
           this.loading = false;
+          if(this.loginForm.token == ""){
+            this.msg = "伺服器連線失敗"
+          }
         });
       // -----------------------------------------------------------------
     },

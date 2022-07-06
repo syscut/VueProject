@@ -46,18 +46,7 @@
     },
     "rules": {
       "vue/multi-word-component-names": [
-        "error",
-        {
-          "ignores": [
-            "Basn021",
-            "Mafm080",
-            "Basd060",
-            "Invd140",
-            "Invm010",
-            "Login",
-            "Page404"
-          ]
-        }
+        "off"
       ]
     }
   },

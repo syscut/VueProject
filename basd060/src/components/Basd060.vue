@@ -271,8 +271,13 @@
         </v-col>
       </v-row>
       <v-row class="mt-n6">
-        <v-col style="color: red" align="center">
+        <v-col align="left">
+          <pre style="color: red">
           {{ errMsg }}
+          </pre>
+          <span style="color: green">
+            {{ okMsg }}
+          </span>
         </v-col>
       </v-row>
       <v-row>
@@ -398,6 +403,7 @@ import axios from "axios";
 import { big5Utis } from "../../../lib/big5Utis";
 import { valid } from "../../../lib/valid";
 import { errorHandle } from "../../../lib/errorHandle";
+import { glib } from "../../../lib/gfclib";
 
 export default {
   name: "Basd060Main",
@@ -413,7 +419,6 @@ export default {
         cust_fax: "", //客戶傳真 CHAR      15
         inv_addr: "", //發票地址 VARCHAR   60
         zip_code: "", //客戶郵遞區號 CHAR   3
-        zip_area: "", //郵遞區域 CHAR      12
         resp_man: "", //負責人 CHAR        10
         call_man: "", //聯絡人 CHAR        10
         call_tel: "", //聯絡人電話 CHAR     15
@@ -429,6 +434,7 @@ export default {
         create_date: "", // DATE
         update_id: "", // CHAR      10
         update_date: "", // DATE
+        zip_area: "", //郵遞區域 CHAR      12
       },
       defaultForm: {
         cust_no: "", //客戶編號 DECIMAL    6
@@ -493,6 +499,7 @@ export default {
       char60: [(v) => big5Utis.countBig5Text(v) <= 60 || "超過60個字元"],
       char70: [(v) => big5Utis.countBig5Text(v) <= 70 || "超過70個字元"],
       errMsg: "",
+      okMsg: "",
       user_name: "胡國棟",
       flag: "",
       current: 0,
@@ -503,6 +510,7 @@ export default {
       progress: false,
       valid: false,
       modify: false,
+      sql: [],
     };
   },
   computed: {},
@@ -518,9 +526,32 @@ export default {
   },
   methods: {
     test() {
-      // axios.get("http://192.6.3.12/xml/xml/kim_test01.html").then((res) => {
-      //   Object.assign(this.form, res.data[0]);
-      // });
+      let sqlStr =
+        "select a.*, b.zip_area from basm060 a left join basm020 b on b.zip_code = a.zip_code where 1 = 1";
+      let alias = { a: ["zip_code"], b: ["zip_area"] };
+      // let ignore = ["cust_no"];
+      this.okMsg = sqlStr + glib.sqlBuilder(this.form, alias);
+      //   this.sql[0] =
+      //   `update basm060 set remk = '${this.form.remk}' where cust_no in (70170,70172)`;
+      //   const getMax = "select max(cust_no) from basm060"
+
+      // axios
+      //   .post("http://localhost:5000/search", [getMax])
+      //   .then((res) => {
+
+      //       const create = `insert into basm060 values('${res.data.result0[0][0]+1}','鉅峯醫藥生技股份有限公司',' ',' ','青島路二段25之3號','404','陳生明',' ','0928-969666','53969014','2','1','Y','N','70170',' ',' ','胡國棟','07/05/2022','胡國棟','07/05/2022')`;
+      //       axios.post("http://localhost:5000/update", [create]).then(r=>{
+      //          this.errMsg = r.data.result0;
+      //       })
+
+      //   })
+      //   .catch((e) => {
+      //     let msg = e?.response?.data;
+      //     this.errMsg = msg;
+      //   })
+      //   .finally(() => {
+      //     this.progress = false;
+      //   });
     },
     createMode() {
       this.clearPageNoAndErrorMsg();
@@ -579,23 +610,33 @@ export default {
     },
     search() {
       this.setDefaultForm();
+      let alias = { a: ["zip_code"], b: ["zip_area"] };
+      this.sql[0] =
+        "select a.*, b.zip_area from basm060 a left join basm020 b on b.zip_code = a.zip_code where 1 = 1 " +
+        glib.sqlBuilder(this.form, alias);
       axios
-        .post("http://localhost:5000/search", this.form)
+        .post("http://localhost:5000/search", this.sql)
         .then((res) => {
-          if (res.data.length == 300) {
+          const data = res.data.result0;
+          if (data.length == 300) {
             this.errMsg = "資料超過300筆!";
           }
-          if (res.data.length == 0) {
+          if (data.length == 0) {
             this.errMsg = "查無資料!";
           } else {
             this.current = 1;
-            this.total = res.data.length;
-            Object.assign(this.form, res.data[0]);
-            Object.assign(this.list, res.data);
+            this.total = data.length;
+            console.log(data);
+            Object.keys(this.form).forEach((key, index) => {
+              Object.assign(this.form, { [key]: data[0][index] });
+            });
+
+            Object.assign(this.list, data);
           }
         })
         .catch((e) => {
-          this.errMsg = errorHandle.errMsg(e);
+          let msg = e?.response?.data;
+          this.errMsg = msg;
         })
         .finally(() => {
           this.progress = false;
@@ -757,7 +798,11 @@ export default {
     },
     assignObj() {
       this.errMsg = "";
-      Object.assign(this.form, this.list[this.current - 1]);
+      Object.keys(this.form).forEach((key, index) => {
+        Object.assign(this.form, {
+          [key]: this.list[this.current - 1][index],
+        });
+      });
       //Object.assign(this.defaultForm, this.list[this.current - 1]);
     },
   },

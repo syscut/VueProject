@@ -437,6 +437,7 @@
 import Vue from "vue";
 import axios from "axios";
 import en from "syscut";
+import { big5Utis } from "../../../lib/big5Utis";
 //const en = require('@syscut/mymodule')
 export default {
   props: {
@@ -679,7 +680,7 @@ export default {
       let param = Object.keys(this.editedItem)
         .map((key) => {
           if (key == "s110" || key == "qt_desc") {
-            return key + "=" + en.encodeBig5(this.editedItem[key]);
+            return key + "=" + big5Utis.encodeBig5(this.editedItem[key]);
           }
           return key + "=" + this.editedItem[key];
         })
@@ -746,7 +747,7 @@ export default {
       return desc.slice(0, carr[0] + 1);
     },
     isImg(desc) {
-      return desc.substring(0, 44) ==
+      return desc?.substring(0, 44) ==
         "http://gfcweb/cgi-bin/prgm360w_dl_handle.pl?"
         ? true
         : false;
@@ -927,7 +928,7 @@ export default {
             //console.log(d)
             Object.assign(
               this.content[this.editedIndex],
-              Object.assign(this.editedItem, d.data)
+              Object.assign(this.editedItem, big5Utis.decodeBig5(d.data))
             );
 
             this.snack = true;
@@ -1136,7 +1137,7 @@ export default {
       let len = this.selected.length - 1;
 
       await axios
-        .get(this.api + "s110=" + en.encodeBig5(this.selectedS110), {
+        .get(this.api + "s110=" + big5Utis.encodeBig5(this.selectedS110), {
           params: {
             qt_type_s: qt_type_s,
             qt_no_s: qt_no_s,
