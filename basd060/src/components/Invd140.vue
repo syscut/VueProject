@@ -1,26 +1,5 @@
 <template>
   <v-form v-model="valid" lazy-validation>
-    <v-app-bar color="primary" dark dense>
-      <v-app-bar-nav-icon>
-        <v-tooltip bottom color="primary">
-          <template v-slot:activator="{ on, attrs }">
-            <a v-bind="attrs" v-on="on" href="#">
-              <v-img
-                class="elevation-4"
-                src="@/assets/gfc.gif"
-                max-height="37"
-                max-width="37"
-              />
-            </a>
-          </template>
-          <span>程式說明</span>
-        </v-tooltip>
-      </v-app-bar-nav-icon>
-
-      <v-spacer></v-spacer>
-      <v-toolbar-title> 一般領料單開立維護(invd140) </v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-app-bar>
     <v-container>
       <v-row no-gutters class="mt-n4">
         <v-col cols="2">

@@ -6,7 +6,7 @@
       frameborder="0"
       scrolling="no"
       width="100%"
-      height="470px"
+      height="475px"
     ></iframe>
     <v-dialog v-model="progress" hide-overlay persistent width="300">
       <v-card color="primary" dark>
@@ -24,7 +24,7 @@
 </template>
 <script>
 export default {
-  name: "IFrame",
+  name: "iFrame",
   props: {
     src: {
       default: "prgr100",
@@ -45,6 +45,7 @@ export default {
     this.progress = true;
     let iFrame = document.getElementById("iFrame");
     iFrame.onload = () => {
+      // console.log(iFrame.contentWindow.browsingContext);
       this.progress = false;
     };
   },

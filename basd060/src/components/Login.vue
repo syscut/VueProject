@@ -59,7 +59,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { errorHandle } from "../../../lib/errorHandle";
 export default {
-  name: "Login",
+  name: "login",
   data() {
     return {
       loginForm: {
@@ -89,12 +89,12 @@ export default {
       // https://ithelp.ithome.com.tw/users/20129187/ironman/3137
 
       this.msg = "";
-      if(this.loginForm.empNo == ""){
-        this.msg = "工號空白"
+      if (this.loginForm.empNo == "") {
+        this.msg = "工號空白";
         return;
       }
-      if(this.loginForm.usrPaswd == ""){
-        this.msg = "密碼空白"
+      if (this.loginForm.usrPaswd == "") {
+        this.msg = "密碼空白";
         return;
       }
       this.loading = true;
@@ -106,7 +106,7 @@ export default {
             this.loginForm.token = token;
             this.loginForm.empName = res.data.empName;
             this.loginForm.usrGroup = res.data.usrGroup;
-
+            this.loginForm.usrPaswd = "******";
             Cookies.set("loginForm", JSON.stringify(this.loginForm), {
               sameSite: "lax",
             });
@@ -126,8 +126,8 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-          if(this.loginForm.token == ""){
-            this.msg = "伺服器連線失敗"
+          if (this.loginForm.token == "") {
+            this.msg += "伺服器連線失敗";
           }
         });
       // -----------------------------------------------------------------

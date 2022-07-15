@@ -47,6 +47,7 @@
                   width="214px"
                   class="text-lowercase justify-start flex-def"
                   :to="'/menu/' + prg.exec_file.toLowerCase()"
+                  @click="sendPrgList()"
                   outlined
                   text
                   >{{ prg.prg_name + "(" + prg.prg_no + ")" }}
@@ -63,6 +64,7 @@
           width="214px"
           class="text-lowercase justify-start flex-def"
           :to="'/menu/' + sPrg.exec_file.toLowerCase()"
+          @click="sendPrgList()"
           outlined
           text
           >{{ sPrg.prg_name + "(" + sPrg.prg_no + ")" }}
@@ -140,6 +142,9 @@ export default {
           });
       }
     },
+    sendPrgList() {
+      this.$bus.$emit("postPrgList", this.programs);
+    },
   },
   mounted() {
     this.menuLoading = true;
@@ -153,6 +158,7 @@ export default {
       .then((res) => {
         this.menuItem = res.data.menuItem;
         this.programs = res.data.programs;
+        this.sendPrgList();
       })
       .catch((e) => {
         this.errMsg = errorHandle.errMsg(e);
@@ -161,13 +167,23 @@ export default {
         this.menuLoading = false;
       });
   },
+  created() {
+    this.$bus.$on("loadPrgFinish", (status) => {
+      if (status) {
+        this.sendPrgList();
+      }
+    });
+  },
+  beforeDestroy: function () {
+    this.$bus.$off("loadPrgFinish");
+  },
 };
 </script>
 <style scoped>
 .v-expansion-panel-content >>> .v-expansion-panel-content__wrap {
   padding: 0 !important;
 }
-.flex-def >>> .v-btn__content{
+.flex-def >>> .v-btn__content {
   white-space: initial !important;
   flex: auto !important;
   font-size: 0.85em;

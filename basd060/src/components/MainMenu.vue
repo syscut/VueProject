@@ -87,7 +87,11 @@
               ><router-link class="white--text" to="/menu/src/prgr300"
                 >資訊異動單</router-link
               ></v-btn
-            ><v-btn>合約同步管理</v-btn><v-btn>製做我的網頁</v-btn
+            ><v-btn>合約同步管理</v-btn
+            ><v-btn
+              ><router-link class="white--text" to="/menu/src/myweb_add"
+                >製做我的網頁</router-link
+              ></v-btn
             ><v-btn>未簽文件</v-btn><v-btn>密碼更改</v-btn
             ><v-btn>e-Mail登記</v-btn
             ><v-btn @click="logout()">登出</v-btn></v-btn-toggle

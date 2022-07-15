@@ -4,6 +4,7 @@ import vuetify from "./plugins/vuetify";
 import VueRouter from "vue-router";
 import Cookies from "js-cookie";
 
+Vue.prototype.$bus = new Vue();
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 
@@ -29,14 +30,10 @@ const routes = [
         components: { main: () => import("@/components/IFrame.vue") },
       },
       {
-        path: "basd060",
+        path: ":prg",
+        props: { main: true },
         meta: { requireAuth: true },
-        components: { main: () => import("@/components/Basd060.vue") },
-      },
-      {
-        path: "invd140",
-        meta: { requireAuth: true },
-        components: { main: () => import("@/components/Invd140.vue") },
+        components: { main: () => import("@/components/BannerExample.vue") },
       },
       {
         path: "404",

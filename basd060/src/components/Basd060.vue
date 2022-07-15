@@ -1,26 +1,5 @@
 <template>
   <v-form v-model="valid" lazy-validation>
-    <v-app-bar color="primary" dark dense>
-      <v-app-bar-nav-icon>
-        <v-tooltip bottom color="primary">
-          <template v-slot:activator="{ on, attrs }">
-            <a v-bind="attrs" v-on="on" href="http://gfcweb/gfc">
-              <v-img
-                class="elevation-4"
-                src="@/assets/gfc.gif"
-                max-height="37"
-                max-width="37"
-              />
-            </a>
-          </template>
-          <span>程式說明</span>
-        </v-tooltip>
-      </v-app-bar-nav-icon>
-
-      <v-spacer></v-spacer>
-      <v-toolbar-title> 客戶資料檔維護(basd060) </v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-app-bar>
     <v-container>
       <v-row justify="space-between" no-gutters class="mt-n4">
         <v-col cols="2">
@@ -348,7 +327,7 @@
         </v-col>
         <v-col cols="4" align="center">
           <v-btn :disabled="!valid" @click="setDefaultForm()">設定初值</v-btn>
-          <v-btn :disabled="!valid">客戶資料補充檔</v-btn>
+          <v-btn @click="test2()">測試2</v-btn>
           <v-btn @click="test()">測試</v-btn>
         </v-col>
       </v-row>
@@ -402,11 +381,11 @@ import Basn021 from "@/components/Basn021.vue";
 import axios from "axios";
 import { big5Utis } from "../../../lib/big5Utis";
 import { valid } from "../../../lib/valid";
-import { errorHandle } from "../../../lib/errorHandle";
+// import { errorHandle } from "../../../lib/errorHandle";
 import { glib } from "../../../lib/gfclib";
-
+import Cookies from "js-cookie";
 export default {
-  name: "Basd060Main",
+  name: "basd060",
   components: {
     Basn021,
   },
@@ -511,6 +490,8 @@ export default {
       valid: false,
       modify: false,
       sql: [],
+      loginForm: JSON.parse(Cookies.get("loginForm")),
+      timeStamp: "",
     };
   },
   computed: {},
@@ -525,33 +506,65 @@ export default {
     },
   },
   methods: {
+    test2() {
+      let sqlStr = [];
+      sqlStr[0] = `execute procedure prgp010a_sp('${this.timeStamp.replace(
+        " ",
+        "+"
+      )}','GFSR0075W','${this.loginForm.empNo}')`;
+      // sqlStr[0] = this.timeStamp.replace(" ", "+");
+      // sqlStr[1] = "GFSR0075W";
+      // sqlStr[2] = this.loginForm.empNo;
+      axios
+        .post("http://localhost:5000/update", sqlStr)
+        .then((res) => {
+          return res.data.result0;
+        })
+        .catch((e) => {
+          let msg = e?.response?.data;
+          this.errMsg = msg;
+        })
+        .finally(() => {
+          this.progress = false;
+        });
+    },
     test() {
-      let sqlStr =
-        "select a.*, b.zip_area from basm060 a left join basm020 b on b.zip_code = a.zip_code where 1 = 1";
-      let alias = { a: ["zip_code"], b: ["zip_area"] };
-      // let ignore = ["cust_no"];
-      this.okMsg = sqlStr + glib.sqlBuilder(this.form, alias);
-      //   this.sql[0] =
-      //   `update basm060 set remk = '${this.form.remk}' where cust_no in (70170,70172)`;
-      //   const getMax = "select max(cust_no) from basm060"
+      // nohup srvappf.4ge.sh Y 1234 GFSR0075W 2022-07-12+13:43:04 > srvappf.4ge.log 2>&1 &
+      const addLeadingZreo = (arg, offset = 0) => {
+        return String(arg + offset).padStart(2, "0");
+      };
+      const date = new Date();
+      let dateTime = `${date.getFullYear()}-${addLeadingZreo(
+        date.getMonth(),
+        1
+      )}-${addLeadingZreo(date.getDate())} ${addLeadingZreo(
+        date.getHours()
+      )}:${addLeadingZreo(date.getMinutes())}:${addLeadingZreo(
+        date.getSeconds()
+      )}`;
+      this.timeStamp = dateTime;
+      let execMsg = `nohup /gfcsys/mistest/srvappf.4ge Y ${this.loginForm.empNo} GFSR0075W ''${dateTime}'' >> /gfcsys/mistest/srvapp_back.log 2>&1 &`;
+      let sqlStr = [];
+      sqlStr[0] = `insert into prgm030 values('${dateTime}','GFSR0075W','${this.loginForm.empNo}','0','N','B','${dateTime}','','','${execMsg}','','${this.loginForm.empName}')`;
 
-      // axios
-      //   .post("http://localhost:5000/search", [getMax])
-      //   .then((res) => {
-
-      //       const create = `insert into basm060 values('${res.data.result0[0][0]+1}','鉅峯醫藥生技股份有限公司',' ',' ','青島路二段25之3號','404','陳生明',' ','0928-969666','53969014','2','1','Y','N','70170',' ',' ','胡國棟','07/05/2022','胡國棟','07/05/2022')`;
-      //       axios.post("http://localhost:5000/update", [create]).then(r=>{
-      //          this.errMsg = r.data.result0;
-      //       })
-
-      //   })
-      //   .catch((e) => {
-      //     let msg = e?.response?.data;
-      //     this.errMsg = msg;
-      //   })
-      //   .finally(() => {
-      //     this.progress = false;
-      //   });
+      axios
+        .post("http://localhost:5000/update", sqlStr)
+        .then((res) => {
+          if (res.data.result0 == 1) {
+            sqlStr[0] = `execute procedure prgp010a_sp('${this.timeStamp.replace(
+              " ",
+              "+"
+            )}','GFSR0075W','${this.loginForm.empNo}')`;
+            axios.post("http://localhost:5000/update", sqlStr);
+          }
+        })
+        .catch((e) => {
+          let msg = e?.response?.data;
+          this.errMsg = msg;
+        })
+        .finally(() => {
+          this.progress = false;
+        });
     },
     createMode() {
       this.clearPageNoAndErrorMsg();
@@ -594,19 +607,19 @@ export default {
       this.modifiedData = [];
     },
     create() {
-      axios
-        .post("http://localhost:5000/create", this.form)
-        .then((res) => {
-          if (res.data.status) {
-            this.errMsg = res.data.message;
-          }
-        })
-        .catch((e) => {
-          this.errMsg = errorHandle.errMsg(e);
-        })
-        .finally(() => {
-          this.progress = false;
-        });
+      // axios
+      //   .post("http://localhost:5000/create", this.form)
+      //   .then((res) => {
+      //     if (res.data.status) {
+      //       this.errMsg = res.data.message;
+      //     }
+      //   })
+      //   .catch((e) => {
+      //     this.errMsg = errorHandle.errMsg(e);
+      //   })
+      //   .finally(() => {
+      //     this.progress = false;
+      //   });
     },
     search() {
       this.setDefaultForm();
@@ -643,47 +656,47 @@ export default {
         });
     },
     remove() {
-      axios
-        .post("http://localhost:5000/delete", this.form)
-        .then((res) => {
-          if (res.data.status) {
-            this.errMsg = res.data.message;
-          }
-          this.list.splice(this.current - 1, 1);
-          this.total = this.list.length;
-          if (this.current > this.total) {
-            this.current--;
-          }
-          if (this.current != 0) {
-            Object.assign(this.form, this.list[this.current - 1]);
-          } else {
-            Object.assign(this.form, this.list[0]);
-          }
-        })
-        .catch((e) => {
-          this.errMsg = errorHandle.errMsg(e);
-        })
-        .finally(() => {
-          this.progress = false;
-        });
+      // axios
+      //   .post("http://localhost:5000/delete", this.form)
+      //   .then((res) => {
+      //     if (res.data.status) {
+      //       this.errMsg = res.data.message;
+      //     }
+      //     this.list.splice(this.current - 1, 1);
+      //     this.total = this.list.length;
+      //     if (this.current > this.total) {
+      //       this.current--;
+      //     }
+      //     if (this.current != 0) {
+      //       Object.assign(this.form, this.list[this.current - 1]);
+      //     } else {
+      //       Object.assign(this.form, this.list[0]);
+      //     }
+      //   })
+      //   .catch((e) => {
+      //     this.errMsg = errorHandle.errMsg(e);
+      //   })
+      //   .finally(() => {
+      //     this.progress = false;
+      //   });
     },
     update() {
-      this.form.update_id = this.user_name;
-      axios
-        .post("http://localhost:5000/update", this.form)
-        .then((res) => {
-          if (res.data.status) {
-            this.errMsg = res.data.message;
-          }
-          Object.assign(this.list[this.current - 1], this.form);
-        })
-        .catch((e) => {
-          this.errMsg = errorHandle.errMsg(e);
-        })
-        .finally(() => {
-          this.progress = false;
-        });
-      return;
+      // this.form.update_id = this.user_name;
+      // axios
+      //   .post("http://localhost:5000/update", this.form)
+      //   .then((res) => {
+      //     if (res.data.status) {
+      //       this.errMsg = res.data.message;
+      //     }
+      //     Object.assign(this.list[this.current - 1], this.form);
+      //   })
+      //   .catch((e) => {
+      //     this.errMsg = errorHandle.errMsg(e);
+      //   })
+      //   .finally(() => {
+      //     this.progress = false;
+      //   });
+      // return;
     },
     openCheckDialog() {
       if (this.flag == "updateMode") {

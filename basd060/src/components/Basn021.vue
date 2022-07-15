@@ -1,87 +1,92 @@
 <template>
-  <v-dialog v-model="$_dialog" max-width="650px">
-    <v-card>
-      <v-app-bar color="primary" dark dense>
-        <v-app-bar-nav-icon>
-          <v-tooltip bottom color="primary">
-            <template v-slot:activator="{ on, attrs }">
-              <a v-bind="attrs" v-on="on" href="#">
-                <v-img
-                  class="elevation-4"
-                  src="@/assets/gfc.gif"
-                  max-height="37"
-                  max-width="37"
-                />
-              </a>
-            </template>
-            <span>程式說明</span>
-          </v-tooltip>
-        </v-app-bar-nav-icon>
-        <v-spacer></v-spacer>
-        <v-toolbar-title> 郵遞區號檔查詢(basn021) </v-toolbar-title>
-        <v-spacer></v-spacer>
-        使用者：{{ emp_name }}
-      </v-app-bar>
-      <v-container>
-        <v-row class="mx-1">
-          <v-col cols="3">
-            <v-text-field v-model="form.zip_code"
-              ><template v-slot:prepend
-                ><nobr class="mt-1">郵遞區號</nobr></template
-              ></v-text-field
+  <div>
+    <v-dialog v-model="$_dialog" max-width="650px">
+      <v-card>
+        <v-app-bar color="primary" dark dense>
+          <v-app-bar-nav-icon>
+            <v-tooltip bottom color="primary">
+              <template v-slot:activator="{ on, attrs }">
+                <a v-bind="attrs" v-on="on" href="#">
+                  <v-img
+                    class="elevation-4"
+                    src="@/assets/gfc.gif"
+                    max-height="37"
+                    max-width="37"
+                  />
+                </a>
+              </template>
+              <span>程式說明</span>
+            </v-tooltip>
+          </v-app-bar-nav-icon>
+          <v-spacer></v-spacer>
+          <v-toolbar-title> 郵遞區號檔查詢(basn021) </v-toolbar-title>
+          <v-spacer></v-spacer>
+          使用者：{{ emp_name }}
+        </v-app-bar>
+        <v-container>
+          <v-row class="mx-1">
+            <v-col cols="3">
+              <v-text-field v-model="form.zip_code"
+                ><template v-slot:prepend
+                  ><nobr class="mt-1">郵遞區號</nobr></template
+                ></v-text-field
+              >
+            </v-col>
+            <v-col cols="5">
+              <v-text-field v-model="form.zip_area"
+                ><template v-slot:prepend
+                  ><nobr class="mt-1">郵遞區域</nobr></template
+                ></v-text-field
+              ></v-col
             >
-          </v-col>
-          <v-col cols="5">
-            <v-text-field v-model="form.zip_area"
-              ><template v-slot:prepend
-                ><nobr class="mt-1">郵遞區域</nobr></template
-              ></v-text-field
-            ></v-col
+            <v-col class="mt-2" cols="4">
+              <v-btn class="mr-3" @click="search()"
+                >查詢
+                <v-icon right> mdi-magnify </v-icon>
+              </v-btn>
+              <v-btn
+                class="mr-n1"
+                :disabled="selected.length == 0"
+                @click="$emit('zip-inf', selected[0])"
+                >確認
+                <v-icon right> mdi-check </v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row class="mt-n9">
+            <v-col style="color: red" align="center">
+              {{ errMsg }}
+            </v-col>
+          </v-row>
+          <v-data-table
+            show-select
+            single-select
+            class="mx-5"
+            v-model="selected"
+            :headers="headers"
+            :items="content"
+            :footer-props="footerProps"
+            item-key="zip_code"
+            loading-text="搜尋中...請稍後"
+            no-data-text="請輸入並查詢"
+            no-results-text="查無資料"
+            :items-per-page="5"
           >
-          <v-col class="mt-2" cols="4">
-            <v-btn class="mr-3" @click="search()"
-              >查詢
-              <v-icon right> mdi-magnify </v-icon>
-            </v-btn>
-            <v-btn
-              class="mr-n1"
-              :disabled="selected.length == 0"
-              @click="$emit('zip-inf', selected[0])"
-              >確認
-              <v-icon right> mdi-check </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row class="mt-n9">
-          <v-col style="color: red" align="center">
-            {{ errMsg }}
-          </v-col>
-        </v-row>
-        <v-data-table
-          show-select
-          single-select
-          class="mx-5"
-          v-model="selected"
-          :headers="headers"
-          :items="content"
-          :footer-props="footerProps"
-          item-key="zip_code"
-          loading-text="搜尋中...請稍後"
-          no-data-text="請輸入並查詢"
-          no-results-text="查無資料"
-          :items-per-page="5"
-        >
-        </v-data-table>
-      </v-container>
-    </v-card>
-  </v-dialog>
+          </v-data-table>
+        </v-container>
+      </v-card>
+    </v-dialog>
+    <v-sheet v-if="$route.path == '/menu/basn021'"
+      >此程式為細項檢索，無法單獨呼叫</v-sheet
+    >
+  </div>
 </template>
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
 import { errorHandle } from "../../../lib/errorHandle";
 export default {
-  name: "Basn021",
+  name: "basn021",
   props: {
     dialog: {
       type: Boolean,

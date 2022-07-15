@@ -75,7 +75,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { errorHandle } from "../../../lib/errorHandle";
 export default {
-  name: "Mafm080",
+  name: "mafm080",
   props: {
     dialogMafm080: {
       type: Boolean,
