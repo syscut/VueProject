@@ -168,14 +168,14 @@ export default {
       });
   },
   created() {
-    this.$bus.$on("loadPrgFinish", (status) => {
-      if (status) {
-        this.sendPrgList();
-      }
-    });
+    // this.$bus.$on("loadPrgFinish", (status) => {
+    //   if (status) {
+    //     this.sendPrgList();
+    //   }
+    // });
   },
   beforeDestroy: function () {
-    this.$bus.$off("loadPrgFinish");
+    // this.$bus.$off("loadPrgFinish");
   },
 };
 </script>
