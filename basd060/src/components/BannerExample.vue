@@ -76,6 +76,7 @@ export default {
       onLoadComponent: {},
       loadStatus: "loading",
       programList: [],
+      isMounted: false,
       // programs: [],
       onLoadPrgInf: {
         exec_file: "",
@@ -180,10 +181,12 @@ export default {
       this.mountCompontent();
     });
   },
-  // mounted() {
-  //   this.$bus.$emit("loadPrgFinish", true);
-  // },
-  beforeDestroy: function () {
+  mounted() {
+    //第一次Mount會比Menu慢,所以要告訴Menu Mount完成
+    this.$bus.$emit("loadBannerFinish", true);
+  },
+  beforeDestroy() {
+    this.$bus.$emit("loadBannerFinish", false);
     this.$bus.$off("postPrgList");
   },
 };

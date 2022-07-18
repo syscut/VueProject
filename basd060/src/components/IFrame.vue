@@ -27,7 +27,8 @@ export default {
   name: "iFrame",
   props: {
     src: {
-      default: "prgr100",
+      default: "metq010_list",
+      type: String,
     },
   },
   data() {

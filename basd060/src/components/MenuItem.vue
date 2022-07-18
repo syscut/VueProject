@@ -47,7 +47,7 @@
                   width="214px"
                   class="text-lowercase justify-start flex-def"
                   :to="'/menu/' + prg.exec_file.toLowerCase()"
-                  @click="sendPrgList()"
+                  @click="sendPrgList('click')"
                   outlined
                   text
                   >{{ prg.prg_name + "(" + prg.prg_no + ")" }}
@@ -64,7 +64,7 @@
           width="214px"
           class="text-lowercase justify-start flex-def"
           :to="'/menu/' + sPrg.exec_file.toLowerCase()"
-          @click="sendPrgList()"
+          @click="sendPrgList('click')"
           outlined
           text
           >{{ sPrg.prg_name + "(" + sPrg.prg_no + ")" }}
@@ -79,7 +79,6 @@ import axios from "axios";
 import { errorHandle } from "../../../lib/errorHandle";
 export default {
   name: "MenuItem",
-  computed: {},
   data() {
     return {
       menuItem: [],
@@ -91,6 +90,8 @@ export default {
       searchText: "",
       errMsg: "",
       loadingSys: "",
+      waitingBanner: false,
+      bannerLoadded: false,
       menuLoading: false,
       prgLoading: false,
     };
@@ -109,7 +110,15 @@ export default {
         });
       }
     },
+    bannerLoadded: function (val) {
+      //有在等待banner更新
+      if (this.waitingBanner && val) {
+        this.waitingBanner = false;
+        this.$bus.$emit("postPrgList", this.programs);
+      }
+    },
   },
+  computed: {},
   methods: {
     getPrg(event, sys_no) {
       //如果是打開狀態更新程式
@@ -142,8 +151,14 @@ export default {
           });
       }
     },
-    sendPrgList() {
-      this.$bus.$emit("postPrgList", this.programs);
+    sendPrgList(from = "") {
+      //有可能按了 但 banner 還未 mount 所以要等待
+      if (from == "click" && !this.bannerLoadded) {
+        this.waitingBanner = true;
+        // from axios 會比 banner 慢 所以不用判斷 或是from click 但 banner 已經 mount
+      } else {
+        this.$bus.$emit("postPrgList", this.programs);
+      }
     },
   },
   mounted() {
@@ -158,7 +173,7 @@ export default {
       .then((res) => {
         this.menuItem = res.data.menuItem;
         this.programs = res.data.programs;
-        this.sendPrgList();
+        this.sendPrgList("axios");
       })
       .catch((e) => {
         this.errMsg = errorHandle.errMsg(e);
@@ -166,16 +181,14 @@ export default {
       .finally(() => {
         this.menuLoading = false;
       });
+    //取得 banner 是否已 mount
+    this.$bus.$on("loadBannerFinish", (status) => {
+      this.bannerLoadded = status;
+    });
   },
-  created() {
-    // this.$bus.$on("loadPrgFinish", (status) => {
-    //   if (status) {
-    //     this.sendPrgList();
-    //   }
-    // });
-  },
+  beforeCreate() {},
   beforeDestroy: function () {
-    // this.$bus.$off("loadPrgFinish");
+    this.$bus.$off("loadBannerFinish");
   },
 };
 </script>

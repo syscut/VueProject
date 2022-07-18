@@ -19,11 +19,11 @@ const routes = [
     meta: { requireAuth: true },
     component: () => import("@/components/MainMenu.vue"),
     children: [
-      // {
-      //   path: "",
-      //   props: { main: true },
-      //   components: { main: () => import("@/components/IFrame.vue") },
-      // },
+      {
+        path: "",
+        props: { main: true },
+        components: { main: () => import("@/components/IFrame.vue") },
+      },
       {
         path: "src/:src",
         props: { main: true },
