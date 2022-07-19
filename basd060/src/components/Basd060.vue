@@ -1,7 +1,7 @@
 <template>
   <v-form v-model="valid" lazy-validation>
     <v-container>
-      <v-row justify="space-between" no-gutters class="mt-n4">
+      <v-row no-gutters class="mt-n4 flex-nowrap">
         <v-col cols="2">
           <v-text-field
             :disabled="flag != 'searchMode'"
@@ -17,7 +17,7 @@
             </template>
           </v-text-field>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="3" class="offset-1">
           <v-text-field :rules="dec6" counter="6" v-model="form.main_custno">
             <template v-slot:prepend
               ><nobr class="mt-1">隸屬之主客戶代號</nobr></template
@@ -27,7 +27,7 @@
             </template>
           </v-text-field>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2" class="offset-1">
           <v-text-field
             :rules="[unifyNoCheck(form.unify_no)]"
             :counter="uniCounterVal"
@@ -38,7 +38,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="1">
+        <v-col cols="1" class="ml-10">
           <v-text-field
             @blur="showInf()"
             @focus="showInf('pcs_no')"
@@ -50,7 +50,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="1">
+        <v-col cols="1" class="ml-10">
           <v-text-field
             @blur="showInf()"
             @focus="showInf('public_code')"
@@ -63,8 +63,8 @@
           >
         </v-col>
       </v-row>
-      <v-row no-gutters class="mt-n4">
-        <v-col cols="8">
+      <v-row no-gutters class="mt-n4 flex-nowrap">
+        <v-col cols="9">
           <v-text-field :rules="char70" counter="70" v-model="form.cust_name">
             <template v-slot:prepend
               ><nobr class="mt-1">客戶名稱</nobr></template
@@ -75,9 +75,7 @@
             </template>
           </v-text-field>
         </v-col>
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-col class="ml-7" cols="1">
+        <v-col cols="1" class="ml-10">
           <v-text-field
             @blur="showInf()"
             @focus="showInf('tx_code')"
@@ -89,8 +87,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-spacer></v-spacer>
-        <v-col>
+        <v-col cols="1" class="ml-10">
           <v-text-field
             @blur="showInf()"
             @focus="showInf('file_code')"
@@ -98,12 +95,12 @@
             :counter="1"
             v-model="form.file_code"
             ><template v-slot:prepend
-              ><nobr class="mt-1">客戶歸檔碼</nobr></template
+              ><nobr class="mt-1">歸檔碼</nobr></template
             ></v-text-field
           >
         </v-col>
       </v-row>
-      <v-row justify="space-between" class="mt-n7">
+      <v-row no-gutters class="mt-n4 flex-nowrap">
         <v-col cols="3">
           <v-text-field :rules="char15" :counter="15" v-model="form.cust_tel"
             ><template v-slot:prepend
@@ -118,7 +115,7 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2" class="offset-1">
           <v-text-field :rules="char10" counter="10" v-model="form.call_man"
             ><template v-slot:prepend><nobr class="mt-1">聯絡人</nobr></template
             ><template v-slot:counter="{ props }">
@@ -126,15 +123,15 @@
               </v-counter> </template
           ></v-text-field>
         </v-col>
-        <v-col cols="3">
-          <v-text-field :rules="char15" :counter="15" v-model="form.call_tel"
+        <v-col cols="3" class="ml-10">
+          <v-text-field :rules="char15" :counter="15" v-model="form.call_tel" class="mr-10"
             ><template v-slot:prepend
               ><nobr class="mt-1">聯絡人電話</nobr></template
             ></v-text-field
           >
         </v-col>
       </v-row>
-      <v-row class="mt-n10">
+      <v-row class="mt-n4" no-gutters>
         <v-col cols="2">
           <v-text-field disabled :counter="3" v-model="form.zip_code"
             ><template v-slot:prepend
@@ -142,18 +139,18 @@
             ></v-text-field
           >
         </v-col>
-        <v-col cols="3">
+        <v-col cols="3" class="offset-1">
           <v-text-field disabled v-model="form.zip_area"></v-text-field>
         </v-col>
         <v-col cols="1">
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-btn
-                class="ml-n2 mt-3 elevation-3"
+                class=" mt-5 elevation-3"
                 color="grey"
-                dark
-                fab
-                small
+                icon
+                outlined
+                x-small
                 v-on="on"
                 @click="dialog = true"
                 ><v-icon dark> mdi-dots-horizontal </v-icon></v-btn
@@ -171,7 +168,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-row class="mt-n10">
+      <v-row class="mt-n4 flex-nowrap" no-gutters>
         <v-col cols="6">
           <v-text-field :rules="char60" counter="60" v-model="form.inv_addr"
             ><template v-slot:prepend
@@ -181,7 +178,7 @@
               </v-counter> </template
           ></v-text-field>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2" class="offset-1">
           <v-text-field
             :rules="[(v) => v.length <= 4]"
             :counter="4"
@@ -195,8 +192,8 @@
           (VNDR 表示經銷商;SALE 表示業務代表接單)
         </v-col>
       </v-row>
-      <v-row class="mt-n10">
-        <v-col cols="8">
+      <v-row class="mt-n4" no-gutters>
+        <v-col cols="9">
           <v-text-field :rules="char70" counter="70" v-model="form.remk"
             ><template v-slot:prepend><nobr class="mt-1">備註</nobr></template
             ><template v-slot:counter="{ props }">
@@ -205,7 +202,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-row justify="space-between" class="mt-n10">
+      <v-row class="mt-n4" no-gutters justify="space-between">
         <v-col cols="2">
           <v-text-field
             :disabled="flag != 'searchMode'"

@@ -1,7 +1,7 @@
 <template>
-  <v-sheet>
-    <v-main> </v-main>
-  </v-sheet>
+  <v-container>
+    <v-row>GFSR0075W</v-row>
+  </v-container>
 </template>
 
 <script>

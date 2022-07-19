@@ -155,7 +155,7 @@ export default {
       //有可能按了 但 banner 還未 mount 所以要等待
       if (from == "click" && !this.bannerLoadded) {
         this.waitingBanner = true;
-        // from axios 會比 banner 慢 所以不用判斷 或是from click 但 banner 已經 mount
+        // from axios 會比 banner 慢 所以不等待 或是from click 但 banner 已經 mount 也不須等待 banner
       } else {
         this.$bus.$emit("postPrgList", this.programs);
       }
@@ -186,7 +186,6 @@ export default {
       this.bannerLoadded = status;
     });
   },
-  beforeCreate() {},
   beforeDestroy: function () {
     this.$bus.$off("loadBannerFinish");
   },

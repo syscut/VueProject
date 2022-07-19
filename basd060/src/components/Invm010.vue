@@ -104,7 +104,7 @@ export default {
     return {
       selected: [],
       content: [],
-      errMsg: "123",
+      errMsg: "",
       invForm: {
         item_no: "",
         proc_code: "",

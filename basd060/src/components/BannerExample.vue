@@ -113,7 +113,7 @@ export default {
     },
     urlPath: {
       get: function () {
-        if (this.prg.endsWith(".exe")) {
+        if (this.prg.slice(this.prg.length-4,this.prg.length)==".exe") {
           return this.prg.slice(0, this.prg.length - 4);
         } else {
           return this.prg;

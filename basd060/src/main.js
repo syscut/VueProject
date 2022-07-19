@@ -61,8 +61,8 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
+  mode:"history",
+  base: process.env.BASE_URL, //ref: https://cli.vuejs.org/guide/mode-and-env.html#using-env-variables-in-client-side-code
   routes,
 });
 
