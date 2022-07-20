@@ -92,6 +92,7 @@
 import Cookies from "js-cookie";
 import axios from "axios";
 import { errorHandle } from "../../../lib/errorHandle";
+import { glib } from "../../../lib/gfclib";
 export default {
   name: "Invm010",
   props: {
@@ -111,6 +112,9 @@ export default {
         schr_code: "",
         sbl_no: "",
         item_desc: "",
+        item_spec: "",
+        draw_no: "",
+        unit_measure: "",
       },
       emp_name: JSON.parse(Cookies.get("loginForm"))?.empName || "",
       loadData: false,
@@ -208,9 +212,13 @@ export default {
       i.select((v) => v);
     },
     search() {
+      let sql = `select item_no,proc_code,schr_code,sbl_no,item_desc,item_spec,draw_no,unit_measure from invm010 where 1 = 1 ${glib.sqlAndBuilder(
+        this.invForm
+      )}`;
       axios
-        .post("http://localhost:5000/invm010", this.invForm)
+        .post("http://localhost:5000/search", [sql])
         .then((res) => {
+          console.log(res.data.result0);
           this.content = res.data;
         })
         .catch((e) => {

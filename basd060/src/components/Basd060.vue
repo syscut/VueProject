@@ -124,7 +124,11 @@
           ></v-text-field>
         </v-col>
         <v-col cols="3" class="ml-10">
-          <v-text-field :rules="char15" :counter="15" v-model="form.call_tel" class="mr-10"
+          <v-text-field
+            :rules="char15"
+            :counter="15"
+            v-model="form.call_tel"
+            class="mr-10"
             ><template v-slot:prepend
               ><nobr class="mt-1">聯絡人電話</nobr></template
             ></v-text-field
@@ -146,7 +150,7 @@
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-btn
-                class=" mt-5 elevation-3"
+                class="mt-5 elevation-3"
                 color="grey"
                 icon
                 outlined
@@ -505,25 +509,48 @@ export default {
   methods: {
     test2() {
       let sqlStr = [];
-      sqlStr[0] = `execute procedure prgp010a_sp('${this.timeStamp.replace(
-        " ",
-        "+"
-      )}','GFSR0075W','${this.loginForm.empNo}')`;
+      let alias = { a: ["cust_no", "cust_tel"], b: ["cust_name"] };
+      let con = [
+        70170,
+        "ff偐d糍as𡘙123𤀠",
+        "123",
+        "",
+        "崇倫北街47巷9號3樓之2",
+        "403",
+        "",
+        "123",
+        "123",
+        "A123456789",
+        "2",
+        "1",
+        "N",
+        "N",
+        70171,
+        " 𡘙",
+        "",
+        "胡國棟",
+        "09/17/2021",
+        "胡國棟",
+        "05/18/2022",
+        "台中市南區",
+      ];
+      sqlStr[0] = glib.sqlSelectBuilder(this.form, alias);
+      this.okMsg = sqlStr[0];
       // sqlStr[0] = this.timeStamp.replace(" ", "+");
       // sqlStr[1] = "GFSR0075W";
       // sqlStr[2] = this.loginForm.empNo;
-      axios
-        .post("http://localhost:5000/update", sqlStr)
-        .then((res) => {
-          return res.data.result0;
-        })
-        .catch((e) => {
-          let msg = e?.response?.data;
-          this.errMsg = msg;
-        })
-        .finally(() => {
-          this.progress = false;
-        });
+      // axios
+      //   .post("http://localhost:5000/update", sqlStr)
+      //   .then((res) => {
+      //     return res.data.result0;
+      //   })
+      //   .catch((e) => {
+      //     let msg = e?.response?.data;
+      //     this.errMsg = msg;
+      //   })
+      //   .finally(() => {
+      //     this.progress = false;
+      //   });
     },
     test() {
       // nohup srvappf.4ge.sh Y 1234 GFSR0075W 2022-07-12+13:43:04 > srvappf.4ge.log 2>&1 &
@@ -623,7 +650,7 @@ export default {
       let alias = { a: ["zip_code"], b: ["zip_area"] };
       this.sql[0] =
         "select a.*, b.zip_area from basm060 a left join basm020 b on b.zip_code = a.zip_code where 1 = 1 " +
-        glib.sqlBuilder(this.form, alias);
+        glib.sqlAndBuilder(this.form, alias);
       axios
         .post("http://localhost:5000/search", this.sql)
         .then((res) => {
