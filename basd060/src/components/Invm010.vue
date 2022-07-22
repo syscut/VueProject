@@ -3,9 +3,10 @@
     <v-card>
       <v-app-bar color="primary" dark dense>
         <v-app-bar-nav-icon>
-          <v-tooltip bottom color="primary">
+          <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <a v-bind="attrs" v-on="on" href="#">
+              <v-btn v-bind="attrs" v-on="on" icon>
+              <a href="#">
                 <v-img
                   class="elevation-4"
                   src="@/assets/gfc.gif"
@@ -13,6 +14,7 @@
                   max-width="37"
                 />
               </a>
+              </v-btn>
             </template>
             <span>程式說明</span>
           </v-tooltip>
@@ -115,6 +117,7 @@ export default {
         item_spec: "",
         draw_no: "",
         unit_measure: "",
+        rowid:""
       },
       emp_name: JSON.parse(Cookies.get("loginForm"))?.empName || "",
       loadData: false,
@@ -212,14 +215,14 @@ export default {
       i.select((v) => v);
     },
     search() {
-      let sql = `select item_no,proc_code,schr_code,sbl_no,item_desc,item_spec,draw_no,unit_measure from invm010 where 1 = 1 ${glib.sqlAndBuilder(
+      let sql = `${glib.sqlSelectBuilder(this.invForm)} from invm010 where 1 = 1 ${glib.sqlAndBuilder(
         this.invForm
       )}`;
       axios
         .post("http://localhost:5000/search", [sql])
         .then((res) => {
-          console.log(res.data.result0);
-          this.content = res.data;
+          
+          this.content = glib.resultMapping(this.invForm,res.data.result0);
         })
         .catch((e) => {
           this.errMsg = errorHandle.errMsg(e);

@@ -1,51 +1,99 @@
 <template>
   <v-form v-model="valid" lazy-validation>
     <v-container>
-      <v-row no-gutters class="mt-n4">
-        <v-col cols="2">
+      <v-row dense class="mt-n4">
+        <v-col cols="2" align-self="end">
           <v-text-field disabled v-model="defaultForm.wrhs_no">
             <template v-slot:prepend
               ><nobr class="mt-1 ml-4">倉庫別</nobr></template
             ></v-text-field
           >
         </v-col>
-        <v-col class="ml-3" cols="3">
+        <v-col cols="3">
           <v-text-field disabled v-model="defaultForm.wrhs_desc"></v-text-field>
         </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="2">
+        <v-col cols="2" class="offset-1">
           <v-text-field v-model="defaultForm.rqst_emp_no">
             <template v-slot:prepend
               ><nobr class="mt-1">申請人員</nobr></template
             ></v-text-field
           >
         </v-col>
-        <v-col class="ml-3" cols="2"
-          ><v-text-field v-model="defaultForm.rqst_emp_name"></v-text-field
+        <v-col cols="2"
+          ><v-text-field disabled v-model="defaultForm.emp_name"></v-text-field
         ></v-col>
-        <v-spacer></v-spacer>
       </v-row>
-      <v-row no-gutters class="mt-n4">
+      <v-row dense class="mt-n6">
         <v-col cols="2">
-          <v-text-field v-model="defaultForm.tx_wrhs">
+          <v-text-field disabled v-model="defaultForm.wrhs_no">
             <template v-slot:prepend
               ><nobr class="mt-1">申請單號</nobr></template
             ></v-text-field
           >
         </v-col>
-        <v-col class="ml-3" cols="2"
-          ><v-text-field v-model="defaultForm.tx_yyyymm"></v-text-field
+        <v-col cols="1">
+          <v-text-field disabled v-model="defaultForm.tx_code">
+            <template v-slot:prepend
+              ><nobr class="mt-1">-</nobr></template
+            ></v-text-field
+          >
+        </v-col>
+        <v-col cols="1">
+          <v-menu
+            ref="menu"
+            v-model="yyyymmMenu"
+            :close-on-content-click="false"
+            :return-value.sync="defaultForm.rqst_yyyymm"
+            transition="scale-transition"
+            offset-y
+            max-width="200px"
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                readonly
+                v-bind="attrs"
+                v-on="on"
+                v-model="yyyymmFormatted"
+                ><template v-slot:prepend
+                  ><nobr class="mt-1">-</nobr></template
+                ></v-text-field
+              ></template
+            ><v-date-picker
+              v-model="defaultForm.rqst_yyyymm"
+              type="month"
+              no-title
+              scrollable
+              locale="zh-TW"
+              width="200px"
+            >
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="yyyymmMenu = false">
+                取消
+              </v-btn>
+              <v-btn
+                text
+                color="primary"
+                @click="$refs.menu.save(defaultForm.rqst_yyyymm)"
+              >
+                確認
+              </v-btn>
+            </v-date-picker>
+          </v-menu></v-col
+        >
+        <v-col cols="1"
+          ><v-text-field v-model="defaultForm.rqst_no"></v-text-field
         ></v-col>
-        <v-col class="ml-3" cols="2"
-          ><v-text-field v-model="defaultForm.tx_no_item"></v-text-field
-        ></v-col>
-        <v-col class="ml-5" cols="4"
-          ><v-text-field v-model="defaultForm.tx_desc">
+        <v-col cols="2" class="offset-1"
+          ><v-text-field v-model="defaultForm.tx_code">
             <template v-slot:prepend
               ><nobr class="mt-1">單據名稱</nobr></template
             ></v-text-field
           ></v-col
         >
+        <v-col cols="2"
+          ><v-text-field disabled v-model="defaultForm.tx_desc"> </v-text-field>
+        </v-col>
       </v-row>
       <v-row no-gutters class="mt-n4">
         <v-col cols="2">
@@ -67,6 +115,11 @@
         <v-col cols="3"
           ><v-text-field disabled v-model="defaultForm.maf_name"></v-text-field
         ></v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="3" class="mt-8" style="color: red"
+          >注意：一張單據最多能有12筆明細</v-col
+        >
+        <v-spacer></v-spacer>
       </v-row>
       <v-row class="mt-n2 mx-1">
         <v-col cols="12" class="elevation-2">
@@ -75,7 +128,7 @@
             calculate-widths
             show-select
             fixed-header
-            height="55vh"
+            :height="tableHeight"
             :items-per-page="12"
             v-model="selected"
             :items="content"
@@ -88,7 +141,7 @@
             <template v-slot:top>
               <!-- top:插入表頭 -->
               <v-row>
-                <v-col cols="8">
+                <v-col cols="12">
                   <v-text-field dense v-model="invInf">
                     <template v-slot:prepend>
                       <v-btn
@@ -104,7 +157,6 @@
                     </template>
                   </v-text-field>
                 </v-col>
-                <v-col style="color: red">注意：一張單據最多能有12筆明細</v-col>
               </v-row>
             </template>
           </v-data-table>
@@ -119,17 +171,21 @@
         <v-col cols="4" align="center">
           <v-btn
             class="mr-2 white--text"
-            :disabled="flag == 'createMode'"
+            :disabled="flag == 'createMode' || prgInf.allow_add != 'Y'"
             color="green"
             >新增模式<v-icon right> mdi-text-box-plus-outline </v-icon></v-btn
           >
-          <v-btn color="primary" :disabled="flag == 'searchMode'"
+          <v-btn
+            color="primary"
+            :disabled="flag == 'searchMode' || prgInf.allow_query != 'Y'"
+            @click="flag = 'searchMode'"
             >查詢模式<v-icon right> mdi-magnify </v-icon></v-btn
-          ><v-spacer></v-spacer>
+          >
+          <v-spacer></v-spacer>
           <v-btn
             class="mt-2 mx-2"
             color="primary"
-            :disabled="!valid || current == 0"
+            :disabled="!valid || prgInf.allow_update != 'Y'"
             @click="
               flag = 'updateMode';
               openCheckDialog();
@@ -139,7 +195,7 @@
           <v-btn
             class="mt-2 mr-2"
             color="error"
-            :disabled="current == 0"
+            :disabled="prgInf.allow_delete != 'Y'"
             @click="
               flag = 'removeMode';
               openCheckDialog();
@@ -162,28 +218,25 @@
             </v-icon></v-btn
           >
         </v-col>
-        <v-col cols="4" align="center">
-          <v-btn class="mr-1" :disabled="current <= 1" @click="firstPage()"
-            ><v-icon>mdi-page-first</v-icon></v-btn
-          >
-          <v-btn class="mr-1" :disabled="current <= 1" @click="prePage()"
-            ><v-icon>mdi-less-than</v-icon></v-btn
-          >
-          <v-btn class="mr-1" :disabled="current == total" @click="nextPage()"
-            ><v-icon>mdi-greater-than</v-icon></v-btn
-          >
-          <v-btn :disabled="current == total" @click="lastPage()"
-            ><v-icon>mdi-page-last</v-icon></v-btn
-          >
-          <v-card-text>{{ current }} OF {{ total }}</v-card-text>
-        </v-col>
+        <v-col cols="4"> </v-col>
         <v-col cols="4" align="center">
           <v-btn>新增明細</v-btn>
           <v-btn>查詢明細</v-btn>
           <v-btn>讀取明細</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="mt-2">領料單維護(二)</v-btn>
+          <v-btn class="mt-2">異動單據查詢</v-btn>
         </v-col>
       </v-row>
     </v-container>
+    <v-dialog v-model="queryDialogOpen" width="800px">
+      <v-card>
+        <v-card-title>查詢結果</v-card-title>
+        <v-container>
+          <v-data-table></v-data-table>
+        </v-container>
+      </v-card>
+    </v-dialog>
     <Mafm080 :dialogMafm080.sync="dialogMafm080" @maf-inf="getMafInf($event)" />
     <Invm010 :dialogInvm010.sync="dialogInvm010" @inv-inf="getInvInf($event)" />
   </v-form>
@@ -194,6 +247,12 @@ import Invm010 from "@/components/Invm010.vue";
 import Cookies from "js-cookie";
 export default {
   name: "invd140",
+  props: {
+    prgInf: {
+      type: Object,
+      default: () => {},
+    },
+  },
   components: {
     Mafm080,
     Invm010,
@@ -209,11 +268,11 @@ export default {
         wrhs_no: 9,
         wrhs_desc: "楊梅廠",
         rqst_emp_no: "",
-        rqst_emp_name: "",
-        tx_wrhs: "9-JC",
-        tx_yyyymm: "",
-        tx_no_item: "",
-        tx_desc: "JC-出廠放行單",
+        emp_name: "",
+        rqst_yyyymm: new Date().toISOString().substr(0, 7),
+        rqst_no: "",
+        tx_code: "JC",
+        tx_desc: "出廠放行單",
         maf_dept: "",
         maf_name: "",
       },
@@ -248,7 +307,38 @@ export default {
           sbl_no: "103A",
         },
       ],
+      defaultContent: {
+        rqst_item: "",
+        item_no: "",
+        proc_code: "",
+        schr_code: "",
+        est_qty: "",
+        est_date: "",
+        act_qty: "",
+        act_date: "",
+        res_no: "",
+        res_desc: "",
+        item: "",
+        ct_no: "",
+        elev_no: "",
+        remark: "",
+        bach_no: "",
+        prt_cnt: "",
+        end_mark: "",
+        create_id: "",
+        create_date: "",
+        update_id: "",
+        update_date: "",
+        item_desc: "",
+        item_spec: "",
+        draw_no: "",
+        unit_measure: "",
+        sbl_no: "",
+      },
       valid: false,
+      yyyymmMenu: false,
+      queryDialogOpen: false,
+      insertDialogOpen: false,
       dialogMafm080: false,
       dialogInvm010: false,
       current: 0,
@@ -468,6 +558,19 @@ export default {
         },
       ];
     },
+    tableHeight: {
+      get: function () {
+        let contentLength = this.content.length;
+        if (contentLength > 4) {
+          return "320px";
+        } else {
+          return `${(contentLength + 1) * 64}px`;
+        }
+      },
+    },
+    yyyymmFormatted() {
+      return this.removeDash(this.defaultForm.rqst_yyyymm);
+    },
   },
   methods: {
     getMafInf(e) {
@@ -476,13 +579,25 @@ export default {
       this.dialogMafm080 = false;
     },
     getInvInf(e) {
-      this.invInf = "料號" + e.item_no;
+      this.invInf = `料號:${e.item_no},作業別:${e.proc_code},製成別:${e.schr_code},副番號:${e.sbl_no},品名:${e.item_desc},規格:${e.item_spec},圖號:${e.draw_no},單位:${e.unit_measure}`;
       this.dialogInvm010 = false;
     },
+    removeDash(ym) {
+      if (!ym) {
+        return;
+      }
+      return ym.split("-").join("");
+    },
+  },
+  mounted() {
+    this.emp_no = JSON.parse(Cookies.get("loginForm")).empNo;
+    this.defaultForm.rqst_emp_no = this.emp_no;
+    this.emp_name = JSON.parse(Cookies.get("loginForm")).empName;
+    this.defaultForm.emp_name = this.emp_name;
   },
 };
 </script>
-<style>
+<style scoped>
 th[class*="freeze"],
 th.text-start {
   position: sticky !important;
@@ -496,7 +611,7 @@ td.text-start {
   z-index: inherit !important;
   background-color: white;
 }
-tr:hover td {
+div[class="v-data-table__wrapper"] > table > tr:hover td {
   background-color: #eeeeee;
 }
 th.text-start,

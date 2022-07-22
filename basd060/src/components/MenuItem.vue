@@ -46,7 +46,7 @@
                   v-if="prg.prg_no.slice(0, 3) == item.sys_no"
                   width="214px"
                   class="text-lowercase justify-start flex-def"
-                  :to="'/menu/' + prg.exec_file.toLowerCase()"
+                  :to="'/menu/' + prg.prg_no.toLowerCase()"
                   @click="sendPrgList('click')"
                   outlined
                   text
@@ -63,7 +63,7 @@
         <v-btn
           width="214px"
           class="text-lowercase justify-start flex-def"
-          :to="'/menu/' + sPrg.exec_file.toLowerCase()"
+          :to="'/menu/' + sPrg.prg_no.toLowerCase()"
           @click="sendPrgList('click')"
           outlined
           text
@@ -149,6 +149,10 @@ export default {
             this.prgLoading = false;
             this.loadingSys = "";
           });
+      }else{
+        //如果關起來移除programsOnMenu
+        let otherPrg = this.programsOnMenu.filter(v=>v.prg_no.slice(0,3)!=sys_no)
+        this.programsOnMenu = otherPrg;
       }
     },
     sendPrgList(from = "") {

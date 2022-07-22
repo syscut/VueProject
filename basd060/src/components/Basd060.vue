@@ -508,37 +508,11 @@ export default {
   },
   methods: {
     test2() {
-      let sqlStr = [];
-      let alias = { a: ["cust_no", "cust_tel"], b: ["cust_name"] };
-      let con = [
-        70170,
-        "ff偐d糍as𡘙123𤀠",
-        "123",
-        "",
-        "崇倫北街47巷9號3樓之2",
-        "403",
-        "",
-        "123",
-        "123",
-        "A123456789",
-        "2",
-        "1",
-        "N",
-        "N",
-        70171,
-        " 𡘙",
-        "",
-        "胡國棟",
-        "09/17/2021",
-        "胡國棟",
-        "05/18/2022",
-        "台中市南區",
-      ];
-      sqlStr[0] = glib.sqlSelectBuilder(this.form, alias);
-      this.okMsg = sqlStr[0];
-      // sqlStr[0] = this.timeStamp.replace(" ", "+");
-      // sqlStr[1] = "GFSR0075W";
-      // sqlStr[2] = this.loginForm.empNo;
+      // let sqlStr = [];
+      // let alias = { a: ["cust_no", "cust_tel"], b: ["cust_name"] };
+      // sqlStr[0] = glib.sqlSelectBuilder(this.form, alias);
+      // this.okMsg = sqlStr[0];
+      
       // axios
       //   .post("http://localhost:5000/update", sqlStr)
       //   .then((res) => {

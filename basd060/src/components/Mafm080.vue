@@ -5,7 +5,8 @@
         <v-app-bar-nav-icon>
           <v-tooltip bottom color="primary">
             <template v-slot:activator="{ on, attrs }">
-              <a v-bind="attrs" v-on="on" href="#">
+              <v-btn v-bind="attrs" v-on="on" icon>
+              <a href="#">
                 <v-img
                   class="elevation-4"
                   src="@/assets/gfc.gif"
@@ -13,6 +14,7 @@
                   max-width="37"
                 />
               </a>
+              </v-btn>
             </template>
             <span>程式說明</span>
           </v-tooltip>

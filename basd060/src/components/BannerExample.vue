@@ -30,7 +30,7 @@
         <v-spacer></v-spacer>
       </v-app-bar>
       <keep-alive>
-        <component :is="execProgram"></component>
+        <component :prgInf="onLoadPrgInf" :is="execProgram"></component>
       </keep-alive>
     </v-sheet>
     <v-sheet v-show="loadStatus == 'notFound'">
@@ -83,12 +83,30 @@ export default {
         prg_name: "",
         prg_no: "",
         remark: "",
+        allow_add:"",
+        allow_update:"",
+        allow_delete:"",
+        allow_query:"",
+        allow_exec:"",
+				allow_bn1:"",
+        allow_bn2:"",
+        allow_bn3:"",
+        allow_bn4:""
       },
       defaultOnLoadPrgInf: {
         exec_file: "",
         prg_name: "",
         prg_no: "",
         remark: "",
+        allow_add:"",
+        allow_update:"",
+        allow_delete:"",
+        allow_query:"",
+        allow_exec:"",
+				allow_bn1:"",
+        allow_bn2:"",
+        allow_bn3:"",
+        allow_bn4:""
       },
       // pageNotFound: () => import("@/components/Page404.vue"),
     };
